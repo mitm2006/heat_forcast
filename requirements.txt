@@ -1,0 +1,13 @@
+pandas>=2.1
+numpy>=1.24
+scikit-learn>=1.3
+joblib>=1.3
+requests>=2.31
+plotly>=5.22
+
+# Dashboard — FastAPI backend
+fastapi>=0.111
+uvicorn[standard]>=0.29
+
+# Dashboard — Flask frontend
+flask>=3.0

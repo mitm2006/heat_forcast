@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Climate Intelligence - Heatwave Early Warning System</title>
+  <meta name="description" content="AI-powered heatwave monitoring, prediction and early warning dashboard for Indian cities. Real-time temperature analysis and heat-risk alerts." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    /* ======================================================  TOKENS  */
+    :root {
+      --bg-base:      #0a0e1a;
+      --bg-surface:   #111827;
+      --bg-elevated:  #1a2234;
+      --bg-card:      #1e2a3a;
+      --border:       rgba(99,139,195,0.18);
+      --border-hover: rgba(99,139,195,0.36);
+      --text-primary:   #e8edf5;
+      --text-secondary: #9aaec8;
+      --text-muted:     #5c748f;
+      --accent-blue:   #3b82f6;
+      --accent-teal:   #0ea5e9;
+      --accent-cyan:   #06b6d4;
+      --accent-green:  #16a34a;
+      --accent-yellow: #eab308;
+      --accent-orange: #f97316;
+      --accent-red:    #ef4444;
+      --gradient-hero: linear-gradient(135deg,#0c1629 0%,#0f2445 40%,#0c2d4e 70%,#091e3a 100%);
+      --gradient-card: linear-gradient(145deg,rgba(30,42,58,0.9),rgba(15,22,35,0.95));
+      --shadow-card:   0 4px 24px rgba(0,0,0,0.4),0 1px 0 rgba(255,255,255,0.04);
+      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 18px; --radius-xl: 24px;
+      --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* ======================================================  RESET  */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',sans-serif;background:var(--bg-base);color:var(--text-primary);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased}
+    h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;letter-spacing:-0.02em;line-height:1.2}
+    a{color:var(--accent-blue);text-decoration:none}
+    a:hover{text-decoration:underline}
+    button{cursor:pointer;font-family:inherit}
+    select{font-family:inherit}
+
+    /* ======================================================  LAYOUT  */
+    .layout{display:grid;grid-template-columns:256px 1fr;grid-template-rows:auto 1fr;min-height:100vh}
+
+    /* ======================================================  TOPBAR  */
+    .topbar{
+      grid-column:1/-1;background:var(--bg-surface);border-bottom:1px solid var(--border);
+      display:flex;align-items:center;gap:16px;padding:0 28px;height:58px;
+      position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);
+    }
+    .topbar-brand{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;color:var(--text-primary)}
+    .topbar-brand svg{width:24px;height:24px}
+    .topbar-divider{width:1px;height:22px;background:var(--border);margin:0 4px}
+    .topbar-subtitle{font-size:0.8rem;color:var(--text-muted)}
+    .topbar-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+    .badge{padding:3px 10px;border-radius:999px;font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase}
+    .badge-green  {background:rgba(22,163,74,0.15); color:#86efac;border:1px solid rgba(22,163,74,0.3)}
+    .badge-yellow {background:rgba(234,179,8,0.15); color:#fde68a;border:1px solid rgba(234,179,8,0.3)}
+    .badge-orange {background:rgba(249,115,22,0.15);color:#fdba74;border:1px solid rgba(249,115,22,0.3)}
+    .badge-red    {background:rgba(239,68,68,0.15); color:#fca5a5;border:1px solid rgba(239,68,68,0.3)}
+    .badge-muted  {background:rgba(92,116,143,0.15);color:var(--text-secondary);border:1px solid var(--border)}
+    .status-dot{width:7px;height:7px;border-radius:50%;background:var(--accent-green);box-shadow:0 0 6px var(--accent-green);display:inline-block;animation:pulse 2.4s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}
+
+    /* ======================================================  SIDEBAR  */
+    .sidebar{background:var(--bg-surface);border-right:1px solid var(--border);padding:22px 18px;display:flex;flex-direction:column;gap:22px;overflow-y:auto}
+    .sidebar-section-title{font-size:0.66rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
+    .form-group{display:flex;flex-direction:column;gap:5px}
+    .form-label{font-size:0.77rem;font-weight:600;color:var(--text-secondary)}
+    .form-select{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);padding:8px 11px;font-size:0.85rem;width:100%;outline:none;transition:border-color var(--transition)}
+    .form-select:focus{border-color:var(--accent-blue)}
+    .form-select option{background:var(--bg-surface)}
+    .unit-toggle{display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+    .unit-btn{flex:1;background:transparent;border:none;color:var(--text-secondary);font-size:0.83rem;font-weight:600;padding:7px 0;transition:background var(--transition),color var(--transition)}
+    .unit-btn.active{background:var(--accent-blue);color:#fff}
+    .slider-wrap{display:flex;flex-direction:column;gap:5px}
+    .slider-row{display:flex;justify-content:space-between;align-items:center}
+    .slider-val{font-size:0.83rem;font-weight:700;color:var(--accent-blue);min-width:36px;text-align:right}
+    input[type=range]{width:100%;height:4px;-webkit-appearance:none;background:var(--bg-elevated);border-radius:99px;outline:none;accent-color:var(--accent-blue)}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;background:var(--accent-blue);border-radius:50%;box-shadow:0 0 5px rgba(59,130,246,0.5);cursor:pointer}
+    .window-btns{display:flex;gap:5px;flex-wrap:wrap}
+    .window-btn{padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;color:var(--text-secondary);font-size:0.76rem;font-weight:600;transition:all var(--transition)}
+    .window-btn:hover{border-color:var(--accent-blue);color:var(--text-primary)}
+    .window-btn.active{background:var(--accent-blue);border-color:var(--accent-blue);color:#fff}
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;font-size:0.81rem;color:var(--text-secondary)}
+    .toggle-switch{position:relative;width:34px;height:19px;display:inline-block}
+    .toggle-switch input{opacity:0;width:0;height:0}
+    .toggle-slider{position:absolute;inset:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:99px;cursor:pointer;transition:background var(--transition)}
+    .toggle-slider::before{content:'';position:absolute;width:13px;height:13px;top:2px;left:2px;background:var(--text-muted);border-radius:50%;transition:transform var(--transition),background var(--transition)}
+    .toggle-switch input:checked+.toggle-slider{background:rgba(59,130,246,0.3);border-color:var(--accent-blue)}
+    .toggle-switch input:checked+.toggle-slider::before{transform:translateX(15px);background:var(--accent-blue)}
+    .sidebar-divider{height:1px;background:var(--border)}
+    .code-block{background:var(--bg-base);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 11px;font-family:'Courier New',monospace;font-size:0.71rem;color:var(--text-secondary);line-height:1.6;white-space:pre}
+    .sidebar-note{font-size:0.73rem;color:var(--text-muted);line-height:1.5}
+
+    /* ======================================================  MAIN  */
+    .main{overflow-y:auto;padding:26px 30px 48px;display:flex;flex-direction:column;gap:26px}
+
+    /* ======================================================  HERO  */
+    .hero{background:var(--gradient-hero);border:1px solid rgba(59,130,246,0.2);border-radius:var(--radius-xl);padding:26px 30px;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-60px;right:-60px;width:280px;height:280px;background:radial-gradient(circle,rgba(59,130,246,0.12) 0%,transparent 70%);pointer-events:none}
+    .hero-kicker{font-size:0.69rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#7dd3fc;margin-bottom:8px}
+    .hero-title{font-family:'Space Grotesk',sans-serif;font-size:1.8rem;font-weight:700;color:#f0f7ff;margin-bottom:7px;letter-spacing:-0.03em}
+    .hero-subtitle{color:#93c5fd;font-size:0.91rem;max-width:700px;line-height:1.65}
+    .hero-pills{margin-top:16px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+    .hero-pill{padding:3px 11px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:999px;font-size:0.72rem;font-weight:600;color:#bfdbfe}
+
+    /* ======================================================  METRICS  */
+    .metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .metric-card{background:var(--gradient-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;box-shadow:var(--shadow-card);position:relative;overflow:hidden;transition:border-color var(--transition),transform var(--transition)}
+    .metric-card:hover{border-color:var(--border-hover);transform:translateY(-2px)}
+    .metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+    .metric-card:nth-child(1)::before{background:linear-gradient(90deg,var(--accent-orange),var(--accent-red))}
+    .metric-card:nth-child(2)::before{background:linear-gradient(90deg,var(--accent-blue),var(--accent-cyan))}
+    .metric-card:nth-child(3)::before{background:linear-gradient(90deg,var(--accent-yellow),var(--accent-orange))}
+    .metric-card:nth-child(4)::before{background:linear-gradient(90deg,var(--accent-teal),var(--accent-green))}
+    .metric-label{font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:7px}
+    .metric-value{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:700;color:var(--text-primary);line-height:1;margin-bottom:5px}
+    .metric-delta{font-size:0.77rem;color:var(--text-muted)}
+
+    /* ======================================================  SECTION  */
+    .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .section-title{font-size:1.05rem;font-weight:700;color:var(--text-primary)}
+    .section-subtitle{font-size:0.77rem;color:var(--text-muted);margin-top:2px}
+
+    /* ======================================================  CARDS  */
+    .card{background:var(--gradient-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 22px;box-shadow:var(--shadow-card)}
+    .card-title{font-size:0.86rem;font-weight:700;color:var(--text-secondary);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+
+    /* ======================================================  GRID LAYOUTS  */
+    .two-col{display:grid;grid-template-columns:1.45fr 1fr;gap:18px;align-items:start}
+    .two-col-equal{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+
+    /* ======================================================  CHART WRAPPER  */
+    .chart-h320{width:100%;height:320px}
+    .chart-h300{width:100%;height:300px}
+    .chart-h280{width:100%;height:280px}
+
+    /* ======================================================  SCROLLABLE CONTAINERS  */
+    .alert-list{
+      display:flex;flex-direction:column;gap:9px;
+      max-height:305px;overflow-y:auto;padding-right:6px;
+      scrollbar-width:thin;scrollbar-color:rgba(99,139,195,0.3) transparent;
+    }
+    .alert-item{background:var(--bg-elevated);border:1px solid var(--border);border-left:4px solid;border-radius:var(--radius-md);padding:13px 15px;transition:border-color var(--transition),background var(--transition)}
+    .alert-item:hover{background:var(--bg-card)}
+    .alert-item-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+    .alert-item-title{font-size:0.86rem;font-weight:700;color:var(--text-primary)}
+    .alert-item-meta{font-size:0.79rem;color:var(--text-secondary);margin-bottom:4px}
+    .alert-item-reason{font-size:0.77rem;color:var(--text-muted);line-height:1.5}
+    .no-alerts{background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:var(--radius-md);padding:16px 18px;text-align:center;color:#86efac;font-size:0.86rem;font-weight:600}
+
+    /* ======================================================  SCROLLABLE TABLE  */
+    .table-wrap{
+      overflow-x:auto;max-height:270px;overflow-y:auto;
+      scrollbar-width:thin;scrollbar-color:rgba(99,139,195,0.3) transparent;
+      border:1px solid var(--border);border-radius:var(--radius-sm);
+    }
+    table{width:100%;border-collapse:collapse;font-size:0.81rem}
+    thead th{
+      background:#162335;color:var(--text-muted);
+      font-size:0.69rem;font-weight:700;letter-spacing:0.08em;
+      text-transform:uppercase;padding:10px 12px;text-align:left;
+      border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;
+    }
+    tbody tr{border-bottom:1px solid rgba(99,139,195,0.07);transition:background var(--transition)}
+    tbody tr:hover{background:rgba(59,130,246,0.06)}
+    tbody td{padding:9px 12px;color:var(--text-secondary)}
+    tbody td:first-child{font-weight:600;color:var(--text-primary)}
+
+    /* ======================================================  CITY CARDS  */
+    .city-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:11px}
+    .city-card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);padding:15px;text-align:center;transition:all var(--transition)}
+    .city-card:hover{border-color:var(--border-hover);transform:translateY(-2px)}
+    .city-card-name{font-size:0.81rem;font-weight:700;color:var(--text-primary);margin-bottom:5px}
+    .city-card-temp{font-family:'Space Grotesk',sans-serif;font-size:1.45rem;font-weight:700;margin-bottom:5px}
+    .city-card-date{font-size:0.69rem;color:var(--text-muted);margin-top:4px}
+
+    /* ======================================================  INSIGHT CARDS  */
+    .insight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+    .insight-card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px 18px;border-left:3px solid var(--accent-blue)}
+    .insight-card-label{font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px}
+    .insight-card-val{font-family:'Space Grotesk',sans-serif;font-size:1.55rem;font-weight:700;color:var(--text-primary);margin-bottom:4px}
+    .insight-card-note{font-size:0.74rem;color:var(--text-muted);line-height:1.45}
+
+    /* ======================================================  BUTTONS  */
+    .btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:var(--radius-sm);font-size:0.82rem;font-weight:600;border:none;transition:all var(--transition)}
+    .btn-primary{background:var(--accent-blue);color:#fff}
+    .btn-primary:hover{background:#2563eb;transform:translateY(-1px)}
+    .btn-outline{background:transparent;color:var(--accent-blue);border:1px solid rgba(59,130,246,0.4)}
+    .btn-outline:hover{background:rgba(59,130,246,0.1)}
+
+    /* ======================================================  SCENARIO BAR  */
+    .scenario-bar{background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);border-radius:var(--radius-md);padding:11px 17px;font-size:0.83rem;color:#fdba74;display:none}
+    .scenario-bar.visible{display:block}
+    .scenario-bar strong{color:#fb923c}
+
+    /* ======================================================  LOADING  */
+    .loading-overlay{position:fixed;inset:0;background:var(--bg-base);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:15px;transition:opacity 0.4s ease}
+    .loading-spinner{width:42px;height:42px;border:3px solid var(--border);border-top-color:var(--accent-blue);border-radius:50%;animation:spin 0.8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-text{font-size:0.88rem;color:var(--text-muted)}
+
+    /* ======================================================  LEAFLET MAP  */
+    #risk-map{width:100%;height:440px;border-radius:var(--radius-md);background:#111827;position:relative;overflow:hidden}
+    .leaflet-container{background:#111827 !important;font-family:'Inter',sans-serif !important}
+    .leaflet-pane, .leaflet-tile, .leaflet-marker-icon, .leaflet-marker-shadow,
+    .leaflet-tile-container, .leaflet-pane > svg, .leaflet-pane > canvas,
+    .leaflet-zoom-box, .leaflet-image-layer, .leaflet-layer {
+      position:absolute !important;left:0 !important;top:0 !important;
+    }
+    .leaflet-tile{visibility:inherit !important;filter:inherit !important}
+    .leaflet-tile-pane{z-index:200 !important}
+    .leaflet-overlay-pane{z-index:400 !important}
+    .leaflet-marker-pane{z-index:600 !important}
+    .leaflet-popup-pane{z-index:700 !important}
+    .leaflet-popup-content-wrapper{background:#162235 !important;color:#e8edf5 !important;border:1px solid rgba(99,139,195,0.35) !important;border-radius:12px !important;box-shadow:0 12px 28px rgba(0,0,0,0.6) !important}
+    .leaflet-popup-tip{background:#162235 !important}
+    .leaflet-popup-content{margin:14px 16px !important;line-height:1.5 !important}
+    .leaflet-control-layers{background:#162235 !important;color:#e8edf5 !important;border:1px solid rgba(99,139,195,0.3) !important;border-radius:8px !important;padding:8px 12px !important;font-size:0.77rem !important}
+    .leaflet-control-layers label{color:#e8edf5 !important;display:flex;align-items:center;gap:6px;margin:3px 0}
+    .map-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;align-items:center}
+    .map-legend-item{display:flex;align-items:center;gap:7px;font-size:0.77rem;color:var(--text-secondary)}
+    .map-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+    /* Pulsing marker elements */
+    .map-pulse-ring{
+      position:absolute;width:34px;height:34px;border-radius:50%;
+      top:-17px;left:-17px;pointer-events:none;
+      animation:radarPulse 2.4s infinite cubic-bezier(0.2,0,0.4,1);
+    }
+    @keyframes radarPulse{
+      0%{transform:scale(0.4);opacity:0.9}
+      100%{transform:scale(2.2);opacity:0}
+    }
+    .map-center-dot{
+      position:absolute;width:14px;height:14px;border-radius:50%;
+      top:-7px;left:-7px;border:2px solid #0a0e1a;
+      box-shadow:0 0 12px currentColor;
+    }
+    .map-label-tag{
+      position:absolute;left:13px;top:-13px;
+      background:rgba(15,23,42,0.92);backdrop-filter:blur(6px);
+      border:1px solid rgba(99,139,195,0.3);border-radius:6px;
+      padding:3px 9px;white-space:nowrap;display:flex;align-items:center;gap:6px;
+      pointer-events:auto;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.4);
+      transition:transform 0.18s ease,border-color 0.18s ease;
+    }
+    .map-label-tag:hover{transform:translateY(-2px);border-color:var(--accent-blue)}
+    .map-city-name{font-size:0.74rem;font-weight:700;color:#f1f5f9}
+    .map-city-temp{font-family:'Space Grotesk',sans-serif;font-size:0.78rem;font-weight:700}
+
+    /* ======================================================  SCROLLBAR  */
+    ::-webkit-scrollbar{width:6px;height:6px}
+    ::-webkit-scrollbar-track{background:var(--bg-base)}
+    ::-webkit-scrollbar-thumb{background:rgba(99,139,195,0.25);border-radius:4px}
+    ::-webkit-scrollbar-thumb:hover{background:rgba(99,139,195,0.45)}
+
+    /* ======================================================  RESPONSIVE  */
+    @media(max-width:1200px){.metrics-grid{grid-template-columns:repeat(2,1fr)}.city-grid{grid-template-columns:repeat(3,1fr)}.insight-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:960px){.layout{grid-template-columns:1fr}.sidebar{display:none}.two-col,.two-col-equal{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Initialising Climate Intelligence System...</div>
+</div>
+
+<div class="layout">
+
+  <!-- TOPBAR -->
+  <header class="topbar" role="banner">
+    <div class="topbar-brand">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="11" stroke="#3b82f6" stroke-width="1.4"/>
+        <path d="M12 6.5v2.5M12 15v2.5M6.5 12H9M15 12h2.5" stroke="#06b6d4" stroke-width="1.4" stroke-linecap="round"/>
+        <circle cx="12" cy="12" r="3" fill="#3b82f6" opacity="0.85"/>
+      </svg>
+      Climate Intelligence
+    </div>
+    <div class="topbar-divider"></div>
+    <span class="topbar-subtitle">Heatwave Early Warning System</span>
+    <div class="topbar-actions">
+      <span class="status-dot" title="System online"></span>
+      <span id="source-badge" class="badge badge-muted">Loading...</span>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" role="complementary" aria-label="Monitoring controls">
+    <div>
+      <p class="sidebar-section-title">Location</p>
+      <div class="form-group">
+        <label class="form-label" for="city-select">Monitored City</label>
+        <select class="form-select" id="city-select"><option>Loading...</option></select>
+      </div>
+    </div>
+
+    <div>
+      <p class="sidebar-section-title">Temperature Unit</p>
+      <div class="unit-toggle" role="group" aria-label="Temperature unit">
+        <button class="unit-btn active" id="unit-c" onclick="setUnit('C')">Celsius</button>
+        <button class="unit-btn" id="unit-f" onclick="setUnit('F')">Fahrenheit</button>
+      </div>
+    </div>
+
+    <div>
+      <p class="sidebar-section-title">Historical Window</p>
+      <div class="window-btns" role="group" aria-label="Historical window">
+        <button class="window-btn" id="win-30d" onclick="setWindow('30d')">30 Days</button>
+        <button class="window-btn active" id="win-90d" onclick="setWindow('90d')">90 Days</button>
+        <button class="window-btn" id="win-1y"  onclick="setWindow('1y')">1 Year</button>
+        <button class="window-btn" id="win-all" onclick="setWindow('all')">All Data</button>
+      </div>
+    </div>
+
+    <div>
+      <p class="sidebar-section-title">Scenario Analysis</p>
+      <div class="slider-wrap">
+        <div class="slider-row">
+          <label class="form-label" for="uplift-slider">Tmax Uplift</label>
+          <span class="slider-val" id="uplift-val">+0&deg;C</span>
+        </div>
+        <input type="range" id="uplift-slider" min="0" max="15" step="1" value="0" aria-label="Hypothetical Tmax uplift degrees Celsius" />
+        <p class="sidebar-note">Stress-test scenario: adds a hypothetical temperature increase to the forecast.</p>
+      </div>
+    </div>
+
+    <div>
+      <p class="sidebar-section-title">Display Options</p>
+      <div class="toggle-row">
+        <span>Show normal forecast days</span>
+        <label class="toggle-switch" aria-label="Show normal forecast days">
+          <input type="checkbox" id="show-green-toggle" />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div>
+      <p class="sidebar-section-title">Pipeline</p>
+      <div class="code-block">python src/run_pipeline.py
+python src/run_pipeline.py --refresh</div>
+      <p class="sidebar-note" style="margin-top:7px">Dashboard updates after the pipeline writes new CSV outputs.</p>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" role="main">
+
+    <!-- HERO -->
+    <section class="hero" aria-label="Dashboard overview">
+      <div class="hero-kicker">Climate Intelligence | Monitoring &bull; Prediction &bull; Early Warning</div>
+      <h1 class="hero-title">Heatwave Monitoring &amp; Early Warning</h1>
+      <p class="hero-subtitle">Analyse historical temperature patterns, compare AI-driven forecasts with reference weather data, and surface heat-risk signals across major Indian cities.</p>
+      <div class="hero-pills">
+        <span class="hero-pill">5 Monitored Cities</span>
+        <span class="hero-pill">Daily Observations</span>
+        <span class="hero-pill">7-Day Risk Outlook</span>
+        <span class="hero-pill">AI Prediction</span>
+        <span class="hero-pill">Geospatial Risk Mapping</span>
+      </div>
+    </section>
+
+    <!-- SCENARIO WARNING -->
+    <div class="scenario-bar" id="scenario-bar" role="alert">
+      <strong>Scenario Active:</strong> A hypothetical temperature uplift is applied to the forecast. Displayed warnings reflect simulated conditions only.
+    </div>
+
+    <!-- METRIC CARDS -->
+    <section aria-label="Key metrics">
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">Latest Observed Max</div>
+          <div class="metric-value" id="m-latest-tmax">--</div>
+          <div class="metric-delta" id="m-latest-date">--</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Peak Forecast Max</div>
+          <div class="metric-value" id="m-peak-tmax">--</div>
+          <div class="metric-delta" id="m-peak-date">--</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Heat-Watch Days (Next 7)</div>
+          <div class="metric-value" id="m-alert-days">--</div>
+          <div class="metric-delta" id="m-high-days">--</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Forecast Accuracy (MAE)</div>
+          <div class="metric-value" id="m-mae">--</div>
+          <div class="metric-delta">Mean absolute error against historical observations</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMMAND CENTER -->
+    <section aria-label="Temperature trend and risk outlook">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Command Center</h2>
+          <div class="section-subtitle">Observed temperature trend and 7-day risk outlook</div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title" id="hist-chart-title">Observed Temperature Trend</div>
+          <div class="chart-h320" id="hist-chart"></div>
+        </div>
+        <div class="card" style="display:flex;flex-direction:column;max-height:410px">
+          <div class="card-title">Forecast Risk Outlook</div>
+          <p style="font-size:0.77rem;color:var(--text-muted);margin-bottom:12px">Risk levels calculated from forecast maximum temperature and normal departure.</p>
+          <div class="alert-list" id="alert-list">
+            <div class="no-alerts">Loading alerts...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RISK MAP -->
+    <section aria-label="City heat risk map">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Heat Risk Map</h2>
+          <div class="section-subtitle">Interactive geographic distribution of heatwave risk across monitored Indian cities</div>
+        </div>
+        <button class="btn btn-outline" style="font-size:0.75rem;padding:5px 11px" onclick="fitMapBounds()">Center India View</button>
+      </div>
+      <div class="card">
+        <div id="risk-map"></div>
+        <div class="map-legend" id="map-legend">
+          <div class="map-legend-item"><span class="map-legend-dot" style="background:#16a34a"></span>Normal</div>
+          <div class="map-legend-item"><span class="map-legend-dot" style="background:#eab308"></span>Heat Watch</div>
+          <div class="map-legend-item"><span class="map-legend-dot" style="background:#f97316"></span>High Heat Risk</div>
+          <div class="map-legend-item"><span class="map-legend-dot" style="background:#ef4444"></span>Extreme Heat Risk</div>
+          <span style="margin-left:auto;font-size:0.73rem;color:var(--text-muted)">Click any city marker to focus monitoring</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- FORECAST & EARLY WARNINGS -->
+    <section aria-label="AI forecast and daily outlook table">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Forecast &amp; Early Warnings</h2>
+          <div class="section-subtitle">AI prediction versus reference forecast with daily risk table</div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">
+            <span>AI Prediction vs. Reference Forecast</span>
+            <span id="forecast-agreement-badge" class="badge badge-muted" style="font-size:0.67rem">Comparing...</span>
+          </div>
+          <div class="chart-h320" id="forecast-chart"></div>
+        </div>
+        <div class="card" style="display:flex;flex-direction:column;gap:12px;max-height:410px">
+          <div class="card-title">Daily Outlook</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Max (&deg;C)</th>
+                  <th>Min (&deg;C)</th>
+                  <th>Normal (&deg;C)</th>
+                  <th>Anomaly</th>
+                  <th>Risk</th>
+                  <th>Score</th>
+                </tr>
+              </thead>
+              <tbody id="forecast-table-body">
+                <tr><td colspan="7" style="color:var(--text-muted);text-align:center;padding:18px">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <button class="btn btn-primary" onclick="downloadForecast()">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 12l-4-4h2.5V4h3v4H12L8 12z"/><path d="M2 14h12v-1.5H2V14z"/></svg>
+            Download Forecast CSV
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- HISTORICAL CLIMATE INTELLIGENCE -->
+    <section aria-label="Historical climate analysis">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Historical Climate Intelligence</h2>
+          <div class="section-subtitle">Seasonal temperature profile and risk-day distribution</div>
+        </div>
+      </div>
+      <div class="two-col-equal">
+        <div class="card">
+          <div class="card-title">Seasonal Temperature Profile</div>
+          <div class="chart-h300" id="seasonal-chart"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Historical Risk-Day Distribution</div>
+          <div class="chart-h300" id="risk-dist-chart"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CITY COMPARISON -->
+    <section aria-label="City peak temperature comparison">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">City Comparison</h2>
+          <div class="section-subtitle">Peak forecast maximum temperature across all monitored cities</div>
+        </div>
+      </div>
+      <div class="city-grid" id="city-peaks-grid"></div>
+      <div class="card" style="margin-top:14px">
+        <div class="card-title">Peak Forecast Temperature by City</div>
+        <div class="chart-h280" id="city-peaks-chart"></div>
+      </div>
+    </section>
+
+    <!-- PREDICTIVE MODEL PERFORMANCE -->
+    <section aria-label="Predictive model performance">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Predictive Model Performance</h2>
+          <div class="section-subtitle">Objective accuracy indicators and forecast error metrics</div>
+        </div>
+      </div>
+      <div class="insight-grid" id="insight-grid">
+        <div class="insight-card">
+          <div class="insight-card-label">Max Temp MAE</div>
+          <div class="insight-card-val" id="ins-tmax-mae">--</div>
+          <div class="insight-card-note">Mean absolute error of maximum temperature model against historical data</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-card-label">Min Temp MAE</div>
+          <div class="insight-card-val" id="ins-tmin-mae">--</div>
+          <div class="insight-card-note">Mean absolute error of minimum temperature model against historical data</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-card-label">Model Fit (R&sup2;)</div>
+          <div class="insight-card-val" id="ins-r2">--</div>
+          <div class="insight-card-note">Proportion of temperature variance accurately captured by the model</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Cross-City Model Accuracy</div>
+        <div class="table-wrap" style="max-height:220px">
+          <table>
+            <thead>
+              <tr>
+                <th>City</th>
+                <th>Target Variable</th>
+                <th>MAE (&deg;C)</th>
+                <th>RMSE (&deg;C)</th>
+                <th>R&sup2; Score</th>
+              </tr>
+            </thead>
+            <tbody id="metrics-table-body">
+              <tr><td colspan="5" style="color:var(--text-muted);text-align:center;padding:16px">Loading model metrics...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer style="border-top:1px solid var(--border);padding-top:18px;font-size:0.74rem;color:var(--text-muted);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:7px">
+      <span>Climate Intelligence for Heatwave Monitoring, Prediction &amp; Early Warning</span>
+      <span>India &bull; <span id="footer-cities">5 cities</span> monitored</span>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+/* ============================================================
+   STATE & CONSTANTS
+============================================================ */
+const API = window.API_BASE_URL || (window.location.hostname === 'localhost' && window.location.port === '5000' ? 'http://localhost:8000' : '');
+
+let state = { city: null, unit: 'C', window: '90d', uplift: 0, showGreen: false, cities: [], cityMeta: {} };
+let leafletMap = null;
+let leafletMarkers = [];
+
+const RISK_COLORS = { GREEN:'#16a34a', YELLOW:'#eab308', ORANGE:'#f97316', RED:'#ef4444' };
+const RISK_LABELS = { GREEN:'Normal', YELLOW:'Heat Watch', ORANGE:'High Heat Risk', RED:'Extreme Heat Risk' };
+
+/* Shared Plotly layout */
+const PL = (overrides={}) => ({
+  paper_bgcolor: 'rgba(0,0,0,0)',
+  plot_bgcolor:  'rgba(0,0,0,0)',
+  font: { family:'Inter,sans-serif', color:'#9aaec8', size:11 },
+  margin: { l:48, r:14, t:28, b:40 },
+  xaxis: { gridcolor:'rgba(99,139,195,0.09)', linecolor:'rgba(99,139,195,0.18)', zerolinecolor:'transparent', tickfont:{color:'#5c748f',size:10} },
+  yaxis: { gridcolor:'rgba(99,139,195,0.09)', linecolor:'rgba(99,139,195,0.18)', zerolinecolor:'transparent', tickfont:{color:'#5c748f',size:10} },
+  legend: { bgcolor:'rgba(0,0,0,0)', font:{color:'#9aaec8',size:10}, orientation:'h', y:1.14 },
+  hovermode: 'x unified',
+  hoverlabel: { bgcolor:'#1e2a3a', bordercolor:'rgba(99,139,195,0.3)', font:{color:'#e8edf5',size:11} },
+  ...overrides,
+});
+
+const PLOTLY_CFG = { responsive:true, displayModeBar:false };
+
+/* Format number to 2 decimal places, with safe degree sign */
+function fmt(v, suffix='°C') {
+  if (v == null || isNaN(v)) return '--';
+  return parseFloat(v).toFixed(2) + suffix;
+}
+function fmtDep(v) {
+  if (v == null || isNaN(v)) return '--';
+  const n = parseFloat(v).toFixed(2);
+  return (v >= 0 ? '+' : '') + n + '°C';
+}
+
+/* ============================================================
+   API
+============================================================ */
+async function apiFetch(path) {
+  const r = await fetch(API + path);
+  if (!r.ok) throw new Error(`API ${path} -> ${r.status}`);
+  return r.json();
+}
+
+/* ============================================================
+   INIT
+============================================================ */
+async function init() {
+  try {
+    const [cities, status] = await Promise.all([apiFetch('/api/cities'), apiFetch('/api/status')]);
+
+    state.cities   = Object.keys(cities);
+    state.cityMeta = cities;
+    state.city     = state.cities[0];
+
+    const sel = document.getElementById('city-select');
+    sel.innerHTML = state.cities.map(c => `<option value="${c}">${c}, ${cities[c].state}</option>`).join('');
+    sel.value = state.city;
+    sel.addEventListener('change', () => { state.city = sel.value; refreshAll(); });
+
+    const badge = document.getElementById('source-badge');
+    badge.textContent = status.source_badge;
+    badge.className   = status.source_badge.includes('DEMO') ? 'badge badge-yellow' : 'badge badge-green';
+
+    document.getElementById('footer-cities').textContent = `${state.cities.length} cities`;
+
+    initLeafletMap();
+
+    await refreshAll();
+    document.getElementById('loading-overlay').style.opacity = '0';
+    setTimeout(() => {
+      document.getElementById('loading-overlay').style.display = 'none';
+      if (leafletMap) leafletMap.invalidateSize(true);
+    }, 400);
+  } catch(e) {
+    document.getElementById('loading-overlay').innerHTML =
+      `<div style="color:#ef4444;font-size:1rem;text-align:center;padding:32px">
+        <strong>Unable to connect to the API backend.</strong><br>
+        <span style="font-size:0.82rem;color:#9aaec8;margin-top:8px;display:block">
+          Start the FastAPI server:<br>
+          <code style="background:#111827;padding:4px 10px;border-radius:6px;margin-top:6px;display:inline-block">
+            uvicorn dashboard.api:app --port 8000
+          </code>
+        </span>
+      </div>`;
+  }
+}
+
+async function refreshAll() {
+  await Promise.all([
+    loadSummary(), loadHistorical(), loadForecast(), loadAlerts(),
+    loadRiskMap(), loadSeasonal(), loadRiskDist(), loadCityPeaks(),
+    loadModelPerformance(),
+  ]);
+  updateScenarioBar();
+}
+
+/* ============================================================
+   SUMMARY
+============================================================ */
+async function loadSummary() {
+  try {
+    const d = await apiFetch(`/api/summary?city=${encodeURIComponent(state.city)}&unit=C`);
+    document.getElementById('m-latest-tmax').textContent = fmt(d.latest_tmax);
+    document.getElementById('m-latest-date').textContent = d.latest_date || '--';
+    document.getElementById('m-peak-tmax').textContent   = fmt(d.peak_forecast_tmax);
+    document.getElementById('m-peak-date').textContent   = d.peak_forecast_date ? `Peak on ${d.peak_forecast_date}` : '--';
+    document.getElementById('m-alert-days').textContent  = d.alert_days ?? '--';
+    document.getElementById('m-high-days').textContent   = `${d.high_days ?? 0} high / extreme risk`;
+    document.getElementById('m-mae').textContent         = fmt(d.tmax_mae);
+  } catch(e) { console.warn('summary', e); }
+}
+
+/* ============================================================
+   HISTORICAL CHART
+============================================================ */
+async function loadHistorical() {
+  try {
+    const d = await apiFetch(`/api/historical?city=${encodeURIComponent(state.city)}&unit=C&window=${state.window}`);
+    document.getElementById('hist-chart-title').textContent = `${state.city}: Observed Temperature Trend`;
+
+    const dates  = d.data.map(r => r.date);
+    const tmax   = d.data.map(r => r.tmax);
+    const tmin   = d.data.map(r => r.tmin);
+    const normal = d.data.map(r => r.normal_tmax);
+
+    const traces = [
+      { x:dates, y:tmax,   name:'Observed Tmax',      mode:'lines', line:{color:'#f97316',width:2.2} },
+      { x:dates, y:tmin,   name:'Observed Tmin',      mode:'lines', line:{color:'#38bdf8',width:1.8} },
+      { x:dates, y:normal, name:'Climatology Normal', mode:'lines', line:{color:'#64748b',width:1.4,dash:'dash'} },
+    ];
+
+    const shapes = [
+      { type:'line',xref:'paper',x0:0,x1:1,y0:37,y1:37,line:{color:'#eab308',width:1,dash:'dot'} },
+      { type:'line',xref:'paper',x0:0,x1:1,y0:40,y1:40,line:{color:'#f97316',width:1,dash:'dot'} },
+      { type:'line',xref:'paper',x0:0,x1:1,y0:45,y1:45,line:{color:'#ef4444',width:1,dash:'dot'} },
+    ];
+    const annotations = [
+      { xref:'paper',x:0.01,y:37,text:'37°C Watch',showarrow:false,font:{size:9,color:'#eab308'},yanchor:'bottom' },
+      { xref:'paper',x:0.01,y:40,text:'40°C Heatwave',showarrow:false,font:{size:9,color:'#f97316'},yanchor:'bottom' },
+      { xref:'paper',x:0.01,y:45,text:'45°C Severe',showarrow:false,font:{size:9,color:'#ef4444'},yanchor:'bottom' },
+    ];
+
+    Plotly.react('hist-chart', traces,
+      PL({ yaxis:{...PL().yaxis,title:'Temperature (°C)'}, shapes, annotations, height:320 }),
+      PLOTLY_CFG);
+  } catch(e) { console.warn('historical', e); }
+}
+
+/* ============================================================
+   FORECAST CHART + TABLE (Understood & Accurate)
+============================================================ */
+async function loadForecast() {
+  try {
+    const d = await apiFetch(`/api/forecast?city=${encodeURIComponent(state.city)}&unit=C&scenario_uplift=${state.uplift}&show_green=true`);
+
+    const dates    = d.data.map(r => r.date);
+    const fcTmax   = d.data.map(r => r.forecast_tmax != null ? parseFloat(r.forecast_tmax) : null);
+    const mlTmax   = d.data.map(r => r.ml_pred_tmax != null ? parseFloat(r.ml_pred_tmax) : null);
+    const normal   = d.data.map(r => r.normal_tmax != null ? parseFloat(r.normal_tmax) : null);
+    const riskLvl  = d.data.map(r => r.risk_level);
+
+    // Compute average difference between AI model and reference forecast where both exist
+    const diffs = [];
+    for (let i = 0; i < dates.length; i++) {
+      if (fcTmax[i] != null && mlTmax[i] != null) {
+        diffs.push(Math.abs(mlTmax[i] - fcTmax[i]));
+      }
+    }
+    const avgDiff = diffs.length ? (diffs.reduce((a,b)=>a+b,0)/diffs.length).toFixed(2) : '0.00';
+    const badgeEl = document.getElementById('forecast-agreement-badge');
+    badgeEl.textContent = `Agreement: ±${avgDiff}°C avg delta`;
+    badgeEl.className = parseFloat(avgDiff) < 1.2 ? 'badge badge-green' : 'badge badge-yellow';
+
+    // Marker colors based on risk
+    const markerColors = riskLvl.map(l => RISK_COLORS[l] || '#f97316');
+
+    // Build custom hover deltas
+    const hoverTexts = dates.map((_, i) => {
+      const fc = fcTmax[i] != null ? fcTmax[i].toFixed(2) + '°C' : '--';
+      const ml = mlTmax[i] != null ? mlTmax[i].toFixed(2) + '°C' : 'Baseline';
+      const norm = normal[i] != null ? normal[i].toFixed(2) + '°C' : '--';
+      const delta = (fcTmax[i] != null && mlTmax[i] != null) ? ((mlTmax[i] - fcTmax[i] >= 0 ? '+' : '') + (mlTmax[i] - fcTmax[i]).toFixed(2) + '°C') : 'Baseline';
+      return `AI Model: <b>${ml}</b><br>Reference: <b>${fc}</b><br>Normal: <b>${norm}</b><br>Delta (AI - Ref): <b>${delta}</b>`;
+    });
+
+    const traces = [
+      {
+        x: dates, y: mlTmax,
+        name: 'AI Model Prediction (Tmax)',
+        mode: 'lines+markers',
+        line: { color:'#38bdf8', width:2.8 },
+        marker: { size:6, color:'#38bdf8', symbol:'circle' },
+        hovertemplate: '%{text}<extra>AI Model</extra>',
+        text: hoverTexts,
+      },
+      {
+        x: dates, y: fcTmax,
+        name: 'Reference Forecast (Tmax)',
+        mode: 'lines+markers',
+        line: { color:'#f97316', width:2.2, dash:'dot' },
+        marker: { size:7, color: markerColors, line:{ width:1.5, color:'#0a0e1a' } },
+        hovertemplate: '%{text}<extra>Reference</extra>',
+        text: hoverTexts,
+      },
+      {
+        x: dates, y: normal,
+        name: 'Climatological Normal',
+        mode: 'lines',
+        line: { color:'#64748b', dash:'dash', width:1.4 },
+        hovertemplate: '%{text}<extra>Normal</extra>',
+        text: hoverTexts,
+      },
+    ];
+
+    // Threshold lines
+    const shapes = [
+      { type:'line',xref:'paper',x0:0,x1:1,y0:40,y1:40,line:{color:'rgba(239,68,68,0.45)',width:1,dash:'dot'} },
+    ];
+    const annotations = [
+      { xref:'paper',x:0.99,y:40,text:'40°C Threshold',showarrow:false,font:{size:9,color:'#ef4444'},xanchor:'right',yanchor:'bottom' },
+    ];
+
+    const layout = PL({
+      yaxis: { ...PL().yaxis, title:'Max Temperature (°C)', titlefont:{color:'#9aaec8'} },
+      shapes, annotations, height:320,
+      legend: { bgcolor:'rgba(0,0,0,0)', font:{color:'#9aaec8',size:10}, orientation:'h', y:1.15 },
+    });
+
+    Plotly.react('forecast-chart', traces, layout, PLOTLY_CFG);
+
+    /* --- Scrollable Forecast Table --- */
+    const tbody = document.getElementById('forecast-table-body');
+    if (!d.data.length) {
+      tbody.innerHTML = `<tr><td colspan="7" style="color:var(--text-muted);text-align:center;padding:16px">No forecast data</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = d.data.map(r => {
+      const rc = RISK_COLORS[r.risk_level] || '#64748b';
+      const dt = new Date(r.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
+      return `<tr>
+        <td>${dt}</td>
+        <td>${r.forecast_tmax != null ? parseFloat(r.forecast_tmax).toFixed(2) : '--'}</td>
+        <td>${r.forecast_tmin != null ? parseFloat(r.forecast_tmin).toFixed(2) : '--'}</td>
+        <td>${r.normal_tmax  != null ? parseFloat(r.normal_tmax).toFixed(2)  : '--'}</td>
+        <td>${fmtDep(r.departure)}</td>
+        <td><span class="badge" style="background:${rc}22;color:${rc};border-color:${rc}44">${RISK_LABELS[r.risk_level]||r.risk_level||'--'}</span></td>
+        <td>${r.risk_score != null ? parseFloat(r.risk_score).toFixed(0) : '--'}</td>
+      </tr>`;
+    }).join('');
+  } catch(e) { console.warn('forecast', e); }
+}
+
+/* ============================================================
+   ALERTS (Scrollable Container)
+============================================================ */
+async function loadAlerts() {
+  try {
+    const d = await apiFetch(`/api/alerts?city=${encodeURIComponent(state.city)}&unit=C&scenario_uplift=${state.uplift}&show_green=${state.showGreen}`);
+    const el = document.getElementById('alert-list');
+
+    if (!d.alerts.length) {
+      el.innerHTML = `<div class="no-alerts">No heat-watch days in the current forecast window. Continue monitoring as conditions evolve.</div>`;
+      return;
+    }
+
+    el.innerHTML = d.alerts.map(a => {
+      const c  = RISK_COLORS[a.risk_level] || '#64748b';
+      const dt = new Date(a.date).toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+      return `<div class="alert-item" style="border-left-color:${c}">
+        <div class="alert-item-header">
+          <div class="alert-item-title">${RISK_LABELS[a.risk_level]||a.risk_level} - ${dt}</div>
+          <span class="badge" style="background:${c}22;color:${c};border-color:${c}44">${a.risk_score != null ? 'Score: '+parseFloat(a.risk_score).toFixed(0) : ''}</span>
+        </div>
+        <div class="alert-item-meta"><strong>Forecast max:</strong> ${fmt(a.forecast_tmax)} &bull; <strong>Anomaly:</strong> ${fmtDep(a.departure)}</div>
+        <div class="alert-item-reason">${a.risk_reason||''}</div>
+      </div>`;
+    }).join('');
+  } catch(e) { console.warn('alerts', e); }
+}
+
+/* ============================================================
+   HEAT RISK MAP (Interactive Leaflet.js with Dark Tiles)
+============================================================ */
+function initLeafletMap() {
+  if (leafletMap || typeof L === 'undefined') return;
+
+  leafletMap = L.map('risk-map', {
+    center: [22.2, 78.5],
+    zoom: 5,
+    minZoom: 4,
+    maxZoom: 14,
+    zoomControl: true,
+  });
+
+  // OpenStreetMap standard tile layer (URL includes /{z}/{x}/{y}.png)
+  const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+    maxZoom: 19,
+    subdomains: ['a', 'b', 'c'],
+  });
+
+  // OpenStreetMap Humanitarian high-contrast layer (prominent state & country borders)
+  const osmHot = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>, <a href="https://hotosm.org/" target="_blank">HOT</a>',
+    maxZoom: 19,
+    subdomains: ['a', 'b', 'c'],
+  });
+
+  // CartoDB Voyager layer (clean vector-rendered OpenStreetMap data with borders)
+  const voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19,
+  });
+
+  // CartoDB Dark Matter layer
+  const cartoDark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19,
+  });
+
+  // Add OpenStreetMap by default
+  osmLayer.addTo(leafletMap);
+
+  // Add interactive layer selector so users can switch views
+  L.control.layers({
+    "OpenStreetMap (Standard)": osmLayer,
+    "OpenStreetMap (High-Contrast Borders)": osmHot,
+    "CartoDB Voyager (OSM Detailed)": voyager,
+    "Dark Operations Mode": cartoDark,
+  }, null, { position: 'topright', collapsed: true }).addTo(leafletMap);
+
+  // Trigger size recalculation to ensure tiles load seamlessly
+  setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(true); }, 150);
+  setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(true); }, 600);
+
+  window.addEventListener('resize', () => { if (leafletMap) leafletMap.invalidateSize(); });
+}
+
+function fitMapBounds() {
+  if (!leafletMap) return;
+  leafletMap.setView([22.2, 78.5], 5);
+  leafletMap.invalidateSize(true);
+}
+
+async function loadRiskMap() {
+  try {
+    const d = await apiFetch(`/api/city-peaks?unit=C`);
+    if (!leafletMap || typeof L === 'undefined') return;
+
+    leafletMap.invalidateSize(true);
+
+    // Clear previous markers
+    leafletMarkers.forEach(m => leafletMap.removeLayer(m));
+    leafletMarkers = [];
+
+    const bounds = [];
+
+    d.data.forEach(r => {
+      const meta = state.cityMeta[r.city];
+      if (!meta) return;
+
+      const lat = meta.latitude;
+      const lon = meta.longitude;
+      bounds.push([lat, lon]);
+
+      const color = RISK_COLORS[r.risk_level] || '#64748b';
+      const tempVal = parseFloat(r.peak_tmax).toFixed(2);
+      const isWatch = r.risk_level !== 'GREEN';
+
+      // Custom pulsing HTML marker
+      const markerHtml = `
+        <div style="position:relative;">
+          ${isWatch ? `<div class="map-pulse-ring" style="background:${color}"></div>` : ''}
+          <div class="map-center-dot" style="background:${color};color:${color}"></div>
+          <div class="map-label-tag" onclick="selectCityFromMap('${r.city}')">
+            <span class="map-city-name">${r.city}</span>
+            <span class="map-city-temp" style="color:${color}">${tempVal}°C</span>
+          </div>
+        </div>
+      `;
+
+      const customIcon = L.divIcon({
+        className: 'custom-leaflet-marker',
+        html: markerHtml,
+        iconSize: [0, 0],
+        iconAnchor: [0, 0],
+      });
+
+      const marker = L.marker([lat, lon], { icon: customIcon }).addTo(leafletMap);
+
+      // Popup
+      const popupContent = `
+        <div style="font-size:0.83rem">
+          <div style="font-size:0.95rem;font-weight:700;color:#f1f5f9;margin-bottom:4px">${r.city}, ${meta.state}</div>
+          <div style="margin-bottom:6px"><span class="badge" style="background:${color}22;color:${color};border-color:${color}44">${RISK_LABELS[r.risk_level]||r.risk_level}</span></div>
+          <div style="color:#9aaec8;margin-bottom:3px"><strong>Peak Forecast:</strong> <span style="color:#f1f5f9;font-weight:700">${tempVal}°C</span> (${new Date(r.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short'})})</div>
+          <div style="color:#9aaec8;margin-bottom:8px"><strong>Risk Score:</strong> ${r.risk_score != null ? parseFloat(r.risk_score).toFixed(0) : '--'} / 100</div>
+          <button class="btn btn-primary" style="width:100%;font-size:0.75rem;padding:6px 0;justify-content:center" onclick="selectCityFromMap('${r.city}')">
+            Focus Monitoring on ${r.city}
+          </button>
+        </div>
+      `;
+      marker.bindPopup(popupContent);
+      leafletMarkers.push(marker);
+    });
+
+  } catch(e) { console.warn('risk-map', e); }
+}
+
+function selectCityFromMap(cityName) {
+  if (state.cities.includes(cityName)) {
+    state.city = cityName;
+    document.getElementById('city-select').value = cityName;
+    refreshAll();
+  }
+}
+
+/* ============================================================
+   SEASONAL
+============================================================ */
+async function loadSeasonal() {
+  try {
+    const d = await apiFetch(`/api/seasonal?city=${encodeURIComponent(state.city)}&unit=C`);
+    const months   = d.data.map(r => r.month);
+    const meanTmax = d.data.map(r => r.mean_tmax);
+    const p95Tmax  = d.data.map(r => r.p95_tmax);
+
+    const traces = [
+      { x:months, y:meanTmax, name:'Mean Daily Tmax', type:'bar', marker:{color:'#0e7490',opacity:0.88} },
+      { x:months, y:p95Tmax,  name:'95th Percentile', mode:'lines+markers', line:{color:'#f97316',width:2.1}, marker:{size:4} },
+    ];
+    Plotly.react('seasonal-chart', traces,
+      PL({ yaxis:{...PL().yaxis,title:'Temperature (°C)'}, height:300, bargap:0.22 }),
+      PLOTLY_CFG);
+  } catch(e) { console.warn('seasonal', e); }
+}
+
+/* ============================================================
+   RISK DISTRIBUTION
+============================================================ */
+async function loadRiskDist() {
+  try {
+    const d = await apiFetch(`/api/risk-distribution?city=${encodeURIComponent(state.city)}`);
+    const traces = [{ x:d.data.map(r=>r.level), y:d.data.map(r=>r.days), type:'bar', marker:{color:d.data.map(r=>r.color),opacity:0.9} }];
+    Plotly.react('risk-dist-chart', traces,
+      PL({ yaxis:{...PL().yaxis,title:'Historical Days'}, showlegend:false, height:300, bargap:0.28 }),
+      PLOTLY_CFG);
+  } catch(e) { console.warn('risk-dist', e); }
+}
+
+/* ============================================================
+   CITY PEAKS
+============================================================ */
+async function loadCityPeaks() {
+  try {
+    const d = await apiFetch(`/api/city-peaks?unit=C`);
+
+    document.getElementById('city-peaks-grid').innerHTML = d.data.map(r => `
+      <div class="city-card">
+        <div class="city-card-name">${r.city}</div>
+        <div class="city-card-temp" style="color:${r.color}">${parseFloat(r.peak_tmax).toFixed(2)}°C</div>
+        <div style="margin-bottom:3px"><span class="badge" style="background:${r.color}22;color:${r.color};border-color:${r.color}44">${RISK_LABELS[r.risk_level]||r.risk_level}</span></div>
+        <div class="city-card-date">${new Date(r.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}</div>
+      </div>`).join('');
+
+    const traces = [{
+      x: d.data.map(r => r.city),
+      y: d.data.map(r => parseFloat(r.peak_tmax)),
+      type: 'bar',
+      marker: { color:d.data.map(r=>r.color), opacity:0.9 },
+      text: d.data.map(r => `${parseFloat(r.peak_tmax).toFixed(2)}°C`),
+      textposition: 'outside',
+      textfont: { color:'#9aaec8', size:10 },
+    }];
+    Plotly.react('city-peaks-chart', traces,
+      PL({ yaxis:{...PL().yaxis,title:'Peak Forecast Tmax (°C)'}, showlegend:false, height:280, bargap:0.32, margin:{l:48,r:14,t:28,b:36} }),
+      PLOTLY_CFG);
+  } catch(e) { console.warn('city-peaks', e); }
+}
+
+/* ============================================================
+   PREDICTIVE MODEL PERFORMANCE (Clean, No Test/Train Mentions)
+============================================================ */
+async function loadModelPerformance() {
+  try {
+    const d = await apiFetch('/api/metrics?unit=C');
+    if (!d.data || !d.data.length) return;
+
+    // Filter for current city
+    const cityRows = d.data.filter(r => r.City === state.city);
+    const maxRow = cityRows.find(r => r.Target && r.Target.includes('Maximum'));
+    const minRow = cityRows.find(r => r.Target && r.Target.includes('Minimum'));
+
+    if (maxRow) {
+      document.getElementById('ins-tmax-mae').textContent = fmt(maxRow['MAE (°C)']);
+      document.getElementById('ins-r2').textContent = maxRow['R²'] != null ? parseFloat(maxRow['R²']).toFixed(2) : '--';
+    }
+    if (minRow) {
+      document.getElementById('ins-tmin-mae').textContent = fmt(minRow['MAE (°C)']);
+    }
+
+    // Render clean metrics table (Omit train/test columns completely)
+    const tbody = document.getElementById('metrics-table-body');
+    tbody.innerHTML = d.data.map(r => {
+      const isSelected = r.City === state.city;
+      const bg = isSelected ? 'background:rgba(59,130,246,0.08);font-weight:600' : '';
+      const mae = r['MAE (°C)'] != null ? parseFloat(r['MAE (°C)']).toFixed(2) + '°C' : '--';
+      const rmse = r['RMSE (°C)'] != null ? parseFloat(r['RMSE (°C)']).toFixed(2) + '°C' : '--';
+      const r2 = r['R²'] != null ? parseFloat(r['R²']).toFixed(2) : '--';
+      return `<tr style="${bg}">
+        <td>${r.City}</td>
+        <td>${r.Target || '--'}</td>
+        <td>${mae}</td>
+        <td>${rmse}</td>
+        <td>${r2}</td>
+      </tr>`;
+    }).join('');
+  } catch(e) { console.warn('model-performance', e); }
+}
+
+/* ============================================================
+   CONTROLS
+============================================================ */
+function setUnit(u) {
+  state.unit = u;
+  document.getElementById('unit-c').className = `unit-btn${u==='C'?' active':''}`;
+  document.getElementById('unit-f').className = `unit-btn${u==='F'?' active':''}`;
+  document.getElementById('uplift-val').textContent = `+${state.uplift}°${u}`;
+  refreshAll();
+}
+
+function setWindow(w) {
+  state.window = w;
+  ['30d','90d','1y','all'].forEach(k => {
+    document.getElementById(`win-${k}`).className = `window-btn${k===w?' active':''}`;
+  });
+  loadHistorical();
+}
+
+document.getElementById('uplift-slider').addEventListener('input', function() {
+  state.uplift = parseFloat(this.value);
+  document.getElementById('uplift-val').textContent = `+${state.uplift}°C`;
+  updateScenarioBar();
+  loadForecast(); loadAlerts(); loadSummary();
+});
+
+document.getElementById('show-green-toggle').addEventListener('change', function() {
+  state.showGreen = this.checked;
+  loadForecast(); loadAlerts();
+});
+
+function updateScenarioBar() {
+  document.getElementById('scenario-bar').className = `scenario-bar${state.uplift>0?' visible':''}`;
+}
+
+function downloadForecast() {
+  window.open(`${API}/api/download/forecast?city=${encodeURIComponent(state.city)}`, '_blank');
+}
+
+init();
+</script>
+</body>
+</html>

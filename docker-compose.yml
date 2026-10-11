@@ -1,0 +1,55 @@
+services:
+  climate-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: climate-intelligence-api:latest
+    container_name: climate-api
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TIMEZONE=Asia/Kolkata
+    volumes:
+      - ./data:/app/data:ro
+      - ./outputs:/app/outputs
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - climate-network
+
+  climate-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    image: climate-intelligence-frontend:latest
+    container_name: climate-frontend
+    ports:
+      - "5000:5000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - HOST=0.0.0.0
+      - PORT=5000
+      - API_HOST=http://climate-api:8000
+      - FLASK_DEBUG=false
+    depends_on:
+      climate-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:5000/health')\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - climate-network
+
+networks:
+  climate-network:
+    driver: bridge

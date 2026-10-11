@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: climate-intelligence
+  labels:
+    app.kubernetes.io/name: climate-intelligence
+    app.kubernetes.io/part-of: climate-intelligence
