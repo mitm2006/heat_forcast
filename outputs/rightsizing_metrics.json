@@ -1,0 +1,289 @@
+{
+  "timestamp": "2026-10-11T05:35:14Z",
+  "host_metadata": {
+    "instance_type": "t3.medium",
+    "availability_zone": "us-east-1d",
+    "region": "us-east-1",
+    "vcpus": "2"
+  },
+  "host_metrics": {
+    "mem_total_mb": 3834.0,
+    "mem_used_mb": 2408.0,
+    "mem_available_mb": 1426.0,
+    "mem_percent": 62.8,
+    "load_1m": 0.55,
+    "load_5m": 0.32,
+    "load_15m": 0.31,
+    "cpu_percent": 50.0
+  },
+  "k8s_node": {
+    "node_name": "ip-172-31-34-240",
+    "cpu_capacity_m": 2000.0,
+    "cpu_allocatable_m": 2000.0,
+    "mem_capacity_mb": 3790.0,
+    "mem_allocatable_mb": 3790.0,
+    "cpu_req_m": 800.0,
+    "cpu_req_pct": 40.0,
+    "cpu_limit_m": 2600.0,
+    "cpu_limit_pct": 130.0,
+    "mem_req_mb": 1164.0,
+    "mem_req_pct": 30.0,
+    "mem_limit_mb": 2218.0,
+    "mem_limit_pct": 57.0,
+    "actual_cpu_m": 120.0,
+    "actual_cpu_pct": 6.0,
+    "actual_mem_mb": 2114.0,
+    "actual_mem_pct": 55.0,
+    "is_cpu_overcommitted": true,
+    "is_mem_overcommitted": false
+  },
+  "workload": {
+    "deployments": {
+      "climate-api": {
+        "name": "climate-api",
+        "replicas": 2,
+        "cpu_req_per_pod": "100m",
+        "cpu_limit_per_pod": "500m",
+        "mem_req_per_pod": "256Mi",
+        "mem_limit_per_pod": "512Mi",
+        "cpu_req_per_pod_m": 100.0,
+        "cpu_limit_per_pod_m": 500.0,
+        "mem_req_per_pod_mb": 256.0,
+        "mem_limit_per_pod_mb": 512.0
+      },
+      "climate-frontend": {
+        "name": "climate-frontend",
+        "replicas": 4,
+        "cpu_req_per_pod": "100m",
+        "cpu_limit_per_pod": "400m",
+        "mem_req_per_pod": "128Mi",
+        "mem_limit_per_pod": "256Mi",
+        "cpu_req_per_pod_m": 100.0,
+        "cpu_limit_per_pod_m": 400.0,
+        "mem_req_per_pod_mb": 128.0,
+        "mem_limit_per_pod_mb": 256.0
+      }
+    },
+    "pods": [
+      {
+        "name": "climate-api-8c56cf8d9-6fljl",
+        "app": "climate-api",
+        "status": "Running",
+        "restarts": 0,
+        "actual_cpu_m": 2.0,
+        "actual_mem_mb": 171.0,
+        "req_cpu_m": 100.0,
+        "req_mem_mb": 256.0,
+        "limit_cpu_m": 500.0,
+        "limit_mem_mb": 512.0,
+        "cpu_util_req_pct": 2.0,
+        "mem_util_req_pct": 66.8
+      },
+      {
+        "name": "climate-api-8c56cf8d9-jnfz9",
+        "app": "climate-api",
+        "status": "Running",
+        "restarts": 0,
+        "actual_cpu_m": 180.0,
+        "actual_mem_mb": 166.0,
+        "req_cpu_m": 100.0,
+        "req_mem_mb": 256.0,
+        "limit_cpu_m": 500.0,
+        "limit_mem_mb": 512.0,
+        "cpu_util_req_pct": 180.0,
+        "mem_util_req_pct": 64.8
+      },
+      {
+        "name": "climate-frontend-cdd787c6d-96xqf",
+        "app": "climate-frontend",
+        "status": "Running",
+        "restarts": 0,
+        "actual_cpu_m": 1.0,
+        "actual_mem_mb": 30.0,
+        "req_cpu_m": 100.0,
+        "req_mem_mb": 128.0,
+        "limit_cpu_m": 400.0,
+        "limit_mem_mb": 256.0,
+        "cpu_util_req_pct": 1.0,
+        "mem_util_req_pct": 23.4
+      },
+      {
+        "name": "climate-frontend-cdd787c6d-kvj8r",
+        "app": "climate-frontend",
+        "status": "Running",
+        "restarts": 0,
+        "actual_cpu_m": 4.0,
+        "actual_mem_mb": 29.0,
+        "req_cpu_m": 100.0,
+        "req_mem_mb": 128.0,
+        "limit_cpu_m": 400.0,
+        "limit_mem_mb": 256.0,
+        "cpu_util_req_pct": 4.0,
+        "mem_util_req_pct": 22.7
+      },
+      {
+        "name": "climate-frontend-cdd787c6d-wg8ch",
+        "app": "climate-frontend",
+        "status": "Running",
+        "restarts": 0,
+        "actual_cpu_m": 1.0,
+        "actual_mem_mb": 33.0,
+        "req_cpu_m": 100.0,
+        "req_mem_mb": 128.0,
+        "limit_cpu_m": 400.0,
+        "limit_mem_mb": 256.0,
+        "cpu_util_req_pct": 1.0,
+        "mem_util_req_pct": 25.8
+      },
+      {
+        "name": "climate-frontend-cdd787c6d-xkzs4",
+        "app": "climate-frontend",
+        "status": "Running",
+        "restarts": 0,
+        "actual_cpu_m": 2.0,
+        "actual_mem_mb": 29.0,
+        "req_cpu_m": 100.0,
+        "req_mem_mb": 128.0,
+        "limit_cpu_m": 400.0,
+        "limit_mem_mb": 256.0,
+        "cpu_util_req_pct": 2.0,
+        "mem_util_req_pct": 22.7
+      }
+    ],
+    "total_actual_cpu_m": 190.0,
+    "total_actual_mem_mb": 458.0,
+    "total_req_cpu_m": 600.0,
+    "total_req_mem_mb": 1024.0,
+    "total_limit_cpu_m": 2600.0,
+    "total_limit_mem_mb": 2048.0,
+    "avg_cpu_util_pct": 31.7,
+    "avg_mem_util_pct": 44.7
+  },
+  "efficiency_analysis": {
+    "current": {
+      "pods_count": 6,
+      "req_cpu_m": 600.0,
+      "limit_cpu_m": 2600.0,
+      "req_mem_mb": 1024.0,
+      "limit_mem_mb": 2048.0,
+      "node_cpu_overcommit_pct": 130.0
+    },
+    "target": {
+      "pods_count": 4,
+      "req_cpu_m": 150.0,
+      "limit_cpu_m": 800.0,
+      "req_mem_mb": 416.0,
+      "limit_mem_mb": 704.0,
+      "node_cpu_overcommit_pct": 40.0
+    },
+    "improvements": {
+      "cpu_req_savings_pct": 75.0,
+      "cpu_limit_savings_pct": 69.2,
+      "mem_req_savings_pct": 59.4,
+      "mem_limit_savings_pct": 65.6,
+      "pod_reduction_pct": 33.3,
+      "overcommit_resolved": true
+    },
+    "ec2_cost": {
+      "current_instance": "t3.medium (Current Provision)",
+      "target_instance": "t3.small (Recommended Right-Size)",
+      "current_monthly_cost": 30.37,
+      "target_monthly_cost": 15.18,
+      "monthly_savings": 15.18,
+      "annual_savings": 182.21,
+      "savings_percent": 50.0,
+      "ram_saving_gb": 2.0
+    },
+    "container_cost": {
+      "current_vcpu": 0.6,
+      "current_gb": 1.0,
+      "current_monthly_cost": 20.98,
+      "target_vcpu": 0.15,
+      "target_gb": 0.41,
+      "target_monthly_cost": 5.75,
+      "monthly_savings": 15.22,
+      "savings_percent": 72.6
+    }
+  },
+  "benchmark_results": {
+    "total_requests": 80,
+    "concurrency": 8,
+    "duration_seconds": 8.39,
+    "throughput_rps": 9.5,
+    "success_rate_pct": 100.0,
+    "failures": 0,
+    "latency_min_ms": 1.67,
+    "latency_mean_ms": 795.76,
+    "latency_p50_ms": 570.56,
+    "latency_p90_ms": 2068.31,
+    "latency_p95_ms": 2233.38,
+    "latency_p99_ms": 2357.14,
+    "latency_max_ms": 2430.7,
+    "endpoint_stats": {
+      "Frontend Health": {
+        "count": 12,
+        "mean_ms": 3.86,
+        "p50_ms": 2.71,
+        "p95_ms": 6.93,
+        "min_ms": 1.77,
+        "max_ms": 13.59
+      },
+      "Frontend Web UI": {
+        "count": 12,
+        "mean_ms": 4.03,
+        "p50_ms": 2.26,
+        "p95_ms": 10.54,
+        "min_ms": 1.67,
+        "max_ms": 14.16
+      },
+      "API Cities": {
+        "count": 6,
+        "mean_ms": 98.22,
+        "p50_ms": 105.71,
+        "p95_ms": 154.05,
+        "min_ms": 22.61,
+        "max_ms": 155.76
+      },
+      "API Status": {
+        "count": 6,
+        "mean_ms": 950.34,
+        "p50_ms": 560.62,
+        "p95_ms": 1482.84,
+        "min_ms": 258.69,
+        "max_ms": 2303.0
+      },
+      "API Summary (Delhi)": {
+        "count": 18,
+        "mean_ms": 1281.45,
+        "p50_ms": 1311.53,
+        "p95_ms": 2276.25,
+        "min_ms": 223.5,
+        "max_ms": 2337.59
+      },
+      "API City Peaks": {
+        "count": 5,
+        "mean_ms": 1325.7,
+        "p50_ms": 1516.84,
+        "p95_ms": 1665.36,
+        "min_ms": 595.97,
+        "max_ms": 2213.3
+      },
+      "API Forecast (Delhi)": {
+        "count": 10,
+        "mean_ms": 1501.79,
+        "p50_ms": 1662.75,
+        "p95_ms": 2068.01,
+        "min_ms": 233.1,
+        "max_ms": 2430.7
+      },
+      "API Alerts (Delhi)": {
+        "count": 11,
+        "mean_ms": 1141.99,
+        "p50_ms": 743.04,
+        "p95_ms": 2047.74,
+        "min_ms": 208.82,
+        "max_ms": 2231.12
+      }
+    }
+  }
+}
