@@ -11,3 +11,9 @@ uvicorn[standard]>=0.29
 
 # Dashboard — Flask frontend
 flask>=3.0
+
+# Cloud Resource Monitoring & Right-Sizing
+psutil>=5.9.0
+
+# HeatWise AI Generative Advisory (Groq)
+groq>=0.9.0

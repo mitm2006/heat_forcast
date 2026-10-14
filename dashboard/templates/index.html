@@ -257,7 +257,77 @@
     .map-city-name{font-size:0.74rem;font-weight:700;color:#f1f5f9}
     .map-city-temp{font-family:'Space Grotesk',sans-serif;font-size:0.78rem;font-weight:700}
 
+    /* ======================================================  HEATWISE AI  */
+    .heatwise-container{background:linear-gradient(145deg,rgba(20,28,45,0.95),rgba(12,18,30,0.98));border:1px solid rgba(59,130,246,0.28);border-radius:var(--radius-xl);padding:24px 28px;box-shadow:0 8px 32px rgba(0,0,0,0.45),0 0 0 1px rgba(59,130,246,0.1);position:relative;overflow:hidden}
+    .heatwise-container::before{content:'';position:absolute;top:0;right:0;width:340px;height:340px;background:radial-gradient(circle,rgba(14,165,233,0.08) 0%,transparent 70%);pointer-events:none}
+    .heatwise-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+    .heatwise-title-wrap{display:flex;flex-direction:column;gap:4px}
+    .heatwise-badge-ai{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(90deg,rgba(59,130,246,0.18),rgba(14,165,233,0.18));border:1px solid rgba(59,130,246,0.38);color:#7dd3fc;padding:4px 11px;border-radius:999px;font-size:0.69rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;width:fit-content;margin-bottom:4px}
+    .heatwise-kicker{font-size:0.7rem;font-weight:700;color:var(--accent-teal);letter-spacing:0.1em;text-transform:uppercase}
+    .heatwise-title{font-family:'Space Grotesk',sans-serif;font-size:1.35rem;font-weight:700;color:var(--text-primary);letter-spacing:-0.02em}
+    .heatwise-desc{font-size:0.81rem;color:var(--text-secondary);max-width:680px;line-height:1.55}
+    .heatwise-top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .heatwise-btn-sm{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-secondary);padding:6px 12px;font-size:0.77rem;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:all var(--transition)}
+    .heatwise-btn-sm:hover{border-color:var(--accent-blue);color:var(--text-primary);background:var(--bg-elevated)}
+    .heatwise-btn-sm.active{background:rgba(59,130,246,0.18);border-color:var(--accent-blue);color:#93c5fd}
+    .heatwise-toolbar{display:flex;flex-direction:column;gap:16px;background:rgba(15,23,42,0.65);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:22px}
+    .roles-carousel{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+    .role-btn{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 10px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;color:var(--text-secondary);transition:all var(--transition);cursor:pointer;position:relative}
+    .role-btn:hover{border-color:var(--accent-blue);color:var(--text-primary);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+    .role-btn.active{background:linear-gradient(135deg,rgba(30,58,138,0.35),rgba(15,23,42,0.85));border-color:#3b82f6;color:#f0f7ff;box-shadow:0 0 16px rgba(59,130,246,0.35)}
+    .role-btn.active::after{content:'';position:absolute;bottom:-1px;left:20%;right:20%;height:2px;background:var(--accent-blue);box-shadow:0 0 8px var(--accent-blue)}
+    .role-icon{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(255,255,255,0.04);color:var(--accent-teal)}
+    .role-btn.active .role-icon{background:rgba(59,130,246,0.25);color:#60a5fa}
+    .role-label{font-size:0.77rem;font-weight:600;line-height:1.3}
+    .role-sublabel{font-size:0.65rem;color:var(--text-muted)}
+    .role-btn.active .role-sublabel{color:#93c5fd}
+    .toolbar-subrow{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding-top:10px;border-top:1px solid rgba(99,139,195,0.12)}
+    .lang-tabs{display:flex;align-items:center;gap:6px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px}
+    .lang-tab{background:transparent;border:none;color:var(--text-secondary);font-size:0.76rem;font-weight:600;padding:5px 12px;border-radius:6px;transition:all var(--transition)}
+    .lang-tab:hover{color:var(--text-primary)}
+    .lang-tab.active{background:var(--accent-blue);color:#fff;box-shadow:0 2px 6px rgba(59,130,246,0.4)}
+    .date-filter-wrap{display:flex;align-items:center;gap:8px;font-size:0.77rem;color:var(--text-secondary)}
+    .date-select{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);padding:5px 10px;font-size:0.78rem;outline:none}
+    .btn-generate-ai{background:linear-gradient(135deg,#2563eb,#0284c7);border:1px solid rgba(255,255,255,0.15);border-radius:var(--radius-sm);color:#fff;padding:7px 18px;font-size:0.82rem;font-weight:700;display:inline-flex;align-items:center;gap:8px;transition:all var(--transition);box-shadow:0 4px 14px rgba(37,99,235,0.35)}
+    .btn-generate-ai:hover{background:linear-gradient(135deg,#1d4ed8,#0369a1);transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,0.45)}
+    .btn-generate-ai:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+    .advisory-card{background:rgba(17,24,39,0.9);border:1px solid rgba(99,139,195,0.22);border-radius:var(--radius-lg);padding:22px;display:flex;flex-direction:column;gap:20px;position:relative}
+    .advisory-banner{background:linear-gradient(135deg,rgba(30,41,59,0.8),rgba(15,23,42,0.95));border:1px solid var(--border);border-left:4px solid var(--accent-orange);border-radius:var(--radius-md);padding:14px 18px;display:flex;flex-direction:column;gap:6px}
+    .advisory-alert-headline{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:700;color:#fef08a;display:flex;align-items:center;gap:8px}
+    .advisory-summary-text{font-size:0.85rem;color:#cbd5e1;line-height:1.6}
+    .advisory-meta-pills{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px}
+    .advisory-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:20px;align-items:start}
+    .precautions-box{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+    .box-title{font-size:0.83rem;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:8px;letter-spacing:-0.01em}
+    .precaution-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+    .precaution-item{display:flex;align-items:flex-start;gap:10px;font-size:0.81rem;color:#d1d5db;line-height:1.5}
+    .precaution-bullet{width:6px;height:6px;border-radius:50%;background:var(--accent-teal);margin-top:7px;flex-shrink:0;box-shadow:0 0 6px var(--accent-teal)}
+    .emergency-box{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:var(--radius-sm);padding:12px 14px;font-size:0.77rem;color:#fca5a5;line-height:1.55}
+    .emergency-title{font-weight:700;color:#f87171;margin-bottom:4px;display:flex;align-items:center;gap:6px;font-size:0.79rem}
+    .checklist-box{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+    .checklist-progress-bar-wrap{width:100%;height:6px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;margin-top:4px}
+    .checklist-progress-bar{height:100%;background:linear-gradient(90deg,var(--accent-teal),var(--accent-green));border-radius:99px;transition:width 0.3s ease;width:0%}
+    .checklist-items{display:flex;flex-direction:column;gap:8px;max-height:290px;overflow-y:auto;padding-right:4px}
+    .checklist-row{display:flex;align-items:flex-start;gap:10px;background:rgba(15,23,42,0.5);border:1px solid rgba(99,139,195,0.15);border-radius:var(--radius-sm);padding:9px 12px;transition:all var(--transition);cursor:pointer;user-select:none}
+    .checklist-row:hover{border-color:var(--accent-blue);background:rgba(15,23,42,0.85)}
+    .checklist-row.completed{background:rgba(22,163,74,0.08);border-color:rgba(22,163,74,0.3);opacity:0.72}
+    .checklist-row.completed .checklist-text{text-decoration:line-through;color:var(--text-muted)}
+    .chk-input{margin-top:3px;cursor:pointer;accent-color:var(--accent-green);width:15px;height:15px}
+    .checklist-content{display:flex;flex-direction:column;gap:3px;flex:1}
+    .checklist-text{font-size:0.79rem;color:var(--text-primary);line-height:1.4}
+    .checklist-tags{display:flex;align-items:center;gap:6px;font-size:0.67rem}
+    .time-tag{color:#93c5fd;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.25);border-radius:4px;padding:1px 6px}
+    .prio-tag-high{color:#fdba74;background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.25);border-radius:4px;padding:1px 6px;font-weight:600}
+    .prio-tag-med{color:#94a3b8;background:rgba(148,163,184,0.1);border:1px solid rgba(148,163,184,0.2);border-radius:4px;padding:1px 6px}
+    .citations-row{display:flex;align-items:center;gap:8px;font-size:0.68rem;color:var(--text-muted);border-top:1px solid var(--border);padding-top:12px;flex-wrap:wrap}
+    .api-key-panel{position:absolute;top:70px;right:28px;width:320px;background:#162235;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:0 16px 36px rgba(0,0,0,0.6);padding:16px;z-index:50;display:none;flex-direction:column;gap:10px}
+    .api-key-panel.open{display:flex}
+    .toast-msg{position:fixed;bottom:24px;right:28px;background:#1e293b;border:1px solid var(--accent-green);color:#86efac;padding:9px 16px;border-radius:8px;font-size:0.81rem;box-shadow:0 8px 24px rgba(0,0,0,0.5);z-index:9999;opacity:0;transform:translateY(10px);transition:all 0.25s ease;pointer-events:none}
+    .toast-msg.show{opacity:1;transform:translateY(0)}
+    @media(max-width:960px){.roles-carousel{grid-template-columns:repeat(2,1fr)}.advisory-grid{grid-template-columns:1fr}}
+
     /* ======================================================  SCROLLBAR  */
+
     ::-webkit-scrollbar{width:6px;height:6px}
     ::-webkit-scrollbar-track{background:var(--bg-base)}
     ::-webkit-scrollbar-thumb{background:rgba(99,139,195,0.25);border-radius:4px}
@@ -290,6 +360,7 @@
     <div class="topbar-divider"></div>
     <span class="topbar-subtitle">Heatwave Early Warning System</span>
     <div class="topbar-actions">
+      <a href="#heatwise-advisor-section" class="badge" style="background:rgba(14,165,233,0.18);color:#7dd3fc;border:1px solid rgba(14,165,233,0.35);text-decoration:none;display:inline-flex;align-items:center;gap:4px">HeatWise AI</a>
       <span class="status-dot" title="System online"></span>
       <span id="source-badge" class="badge badge-muted">Loading...</span>
     </div>
@@ -370,6 +441,7 @@ python src/run_pipeline.py --refresh</div>
         <span class="hero-pill">7-Day Risk Outlook</span>
         <span class="hero-pill">AI Prediction</span>
         <span class="hero-pill">Geospatial Risk Mapping</span>
+        <a href="#heatwise-advisor-section" class="hero-pill" style="cursor:pointer;border-color:rgba(59,130,246,0.45);background:rgba(59,130,246,0.22);color:#93c5fd;font-weight:700">HeatWise AI Advisor</a>
       </div>
     </section>
 
@@ -492,6 +564,128 @@ python src/run_pipeline.py --refresh</div>
       </div>
     </section>
 
+    <!-- ROLE-SPECIFIC HEATWAVE ADVISOR: HEATWISE AI -->
+    <section id="heatwise-advisor-section" aria-label="Role-Specific Heatwave Advisor HeatWise AI">
+      <div class="heatwise-container">
+        
+        <!-- Header -->
+        <div class="heatwise-header">
+          <div class="heatwise-title-wrap">
+            <div class="heatwise-badge-ai">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+              <span>Generative AI Decision Support</span>
+            </div>
+            <h2 class="heatwise-title">Role-Specific Heatwave Advisor: HeatWise AI</h2>
+            <p class="heatwise-desc">Converts verified heatwave alerts and forecasts into personalised, actionable safety recommendations and preparedness checklists tailored to distinct community roles.</p>
+          </div>
+          <div class="heatwise-top-actions">
+            <button class="heatwise-btn-sm" id="btn-api-key-toggle" onclick="toggleApiKeyPanel()" title="Configure Groq AI API Key">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-1-1l-3 3m0 0l-3-3m3 3l-3 3m-2-1a6.5 6.5 0 1 0-9 9 6.5 6.5 0 0 0 9-9z"/></svg>
+              <span id="api-key-status-label">Groq API Key</span>
+            </button>
+            <div class="api-key-panel" id="api-key-panel">
+              <div style="font-size:0.8rem;font-weight:700;color:#f1f5f9;display:flex;justify-content:space-between;align-items:center">
+                <span>Groq AI Settings</span>
+                <button style="background:transparent;border:none;color:var(--text-muted);font-size:1rem;cursor:pointer" onclick="toggleApiKeyPanel()">&times;</button>
+              </div>
+              <p style="font-size:0.71rem;color:var(--text-muted);line-height:1.4">Enter your Groq API Key to enable real-time LLaMA 3.3 Generative AI advisory. If blank, verified NDMA/IMD official safety guidelines are served.</p>
+              <input type="password" id="groq-key-input" placeholder="gsk_..." style="background:var(--bg-base);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:#fff;font-size:0.78rem;font-family:monospace" />
+              <div style="display:flex;gap:8px;margin-top:4px">
+                <button class="heatwise-btn-sm" style="flex:1;justify-content:center;background:var(--accent-blue);color:#fff" onclick="saveApiKey()">Save Key</button>
+                <button class="heatwise-btn-sm" style="justify-content:center" onclick="clearApiKey()">Clear</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toolbar: Role Selector Carousel + Language & Day controls -->
+        <div class="heatwise-toolbar">
+          <div>
+            <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:8px">Target User Group &amp; Role</div>
+            <div class="roles-carousel" id="roles-carousel">
+              <!-- Outdoor Workers -->
+              <button class="role-btn active" data-role="outdoor_workers" onclick="selectRole('outdoor_workers')">
+                <div class="role-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18h20M4 18v-4a8 8 0 0 1 16 0v4M8 10V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v4"/></svg>
+                </div>
+                <span class="role-label" id="role-lbl-outdoor">Outdoor Workers</span>
+                <span class="role-sublabel">Construction &bull; Logistics</span>
+              </button>
+
+              <!-- School Admins -->
+              <button class="role-btn" data-role="school_admins" onclick="selectRole('school_admins')">
+                <div class="role-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                </div>
+                <span class="role-label" id="role-lbl-school">School Admins</span>
+                <span class="role-sublabel">Students &bull; Sports</span>
+              </button>
+
+              <!-- Older Adults -->
+              <button class="role-btn" data-role="older_adults" onclick="selectRole('older_adults')">
+                <div class="role-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                </div>
+                <span class="role-label" id="role-lbl-older">Older Adults</span>
+                <span class="role-sublabel">Seniors &bull; Caregivers</span>
+              </button>
+
+              <!-- Event Organisers -->
+              <button class="role-btn" data-role="event_organisers" onclick="selectRole('event_organisers')">
+                <div class="role-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <span class="role-label" id="role-lbl-events">Event Organizers</span>
+                <span class="role-sublabel">Crowds &bull; Gatherings</span>
+              </button>
+
+              <!-- Municipal Officials -->
+              <button class="role-btn" data-role="municipal_officials" onclick="selectRole('municipal_officials')">
+                <div class="role-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4M10 10h4M10 14h4M10 18h4"/></svg>
+                </div>
+                <span class="role-label" id="role-lbl-muni">Municipal Officials</span>
+                <span class="role-sublabel">Civic &bull; Disaster Units</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Sub-row: Languages & Target Date & Generate Trigger -->
+          <div class="toolbar-subrow">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+              <span style="font-size:0.75rem;font-weight:600;color:var(--text-secondary)">Language:</span>
+              <div class="lang-tabs" role="tablist">
+                <button class="lang-tab active" id="lang-btn-en" onclick="setHeatwiseLanguage('en')">English</button>
+                <button class="lang-tab" id="lang-btn-hi" onclick="setHeatwiseLanguage('hi')">&#2361;&#2367;&#2344;&#2381;&#2342;&#2368; (Hindi)</button>
+                <button class="lang-tab" id="lang-btn-mr" onclick="setHeatwiseLanguage('mr')">&#2350;&#2352;&#2369;&#2336;&#2368; (Marathi)</button>
+              </div>
+
+              <div class="date-filter-wrap">
+                <label for="heatwise-date-select">Forecast Window:</label>
+                <select class="date-select" id="heatwise-date-select" onchange="onHeatwiseDateChange()">
+                  <option value="">Auto: Highest Risk Forecast Day</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn-generate-ai" id="btn-generate-ai" onclick="generateHeatwiseAdvisory()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+              <span id="btn-generate-label">Generate Advisory</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Advisory Output Card -->
+        <div class="advisory-card" id="advisory-card-output">
+          <div style="text-align:center;padding:36px 20px;color:var(--text-muted)">
+            <div class="loading-spinner" style="margin:0 auto 12px;width:32px;height:32px"></div>
+            <span>Generating HeatWise AI advisory for current location...</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <!-- HISTORICAL CLIMATE INTELLIGENCE -->
     <section aria-label="Historical climate analysis">
       <div class="section-header">
@@ -588,7 +782,23 @@ python src/run_pipeline.py --refresh</div>
 ============================================================ */
 const API = window.API_BASE_URL || (window.location.hostname === 'localhost' && window.location.port === '5000' ? 'http://localhost:8000' : '');
 
-let state = { city: null, unit: 'C', window: '90d', uplift: 0, showGreen: false, cities: [], cityMeta: {} };
+let state = {
+  city: null,
+  unit: 'C',
+  window: '90d',
+  uplift: 0,
+  showGreen: false,
+  cities: [],
+  cityMeta: {},
+  heatwise: {
+    role: 'outdoor_workers',
+    language: 'en',
+    date: '',
+    apiKey: localStorage.getItem('heatwise_groq_api_key') || '',
+    completedTasks: new Set(),
+    currentAdvisory: null,
+  }
+};
 let leafletMap = null;
 let leafletMarkers = [];
 
@@ -654,6 +864,7 @@ async function init() {
     document.getElementById('footer-cities').textContent = `${state.cities.length} cities`;
 
     initLeafletMap();
+    updateApiKeyButtonLabel();
 
     await refreshAll();
     document.getElementById('loading-overlay').style.opacity = '0';
@@ -679,7 +890,7 @@ async function refreshAll() {
   await Promise.all([
     loadSummary(), loadHistorical(), loadForecast(), loadAlerts(),
     loadRiskMap(), loadSeasonal(), loadRiskDist(), loadCityPeaks(),
-    loadModelPerformance(),
+    loadModelPerformance(), generateHeatwiseAdvisory(),
   ]);
   updateScenarioBar();
 }
@@ -837,6 +1048,8 @@ async function loadForecast() {
         <td>${r.risk_score != null ? parseFloat(r.risk_score).toFixed(0) : '--'}</td>
       </tr>`;
     }).join('');
+
+    populateHeatwiseDateSelect(d.data);
   } catch(e) { console.warn('forecast', e); }
 }
 
@@ -1134,6 +1347,7 @@ document.getElementById('uplift-slider').addEventListener('input', function() {
   document.getElementById('uplift-val').textContent = `+${state.uplift}°C`;
   updateScenarioBar();
   loadForecast(); loadAlerts(); loadSummary();
+  generateHeatwiseAdvisory();
 });
 
 document.getElementById('show-green-toggle').addEventListener('change', function() {
@@ -1149,7 +1363,392 @@ function downloadForecast() {
   window.open(`${API}/api/download/forecast?city=${encodeURIComponent(state.city)}`, '_blank');
 }
 
+/* ============================================================
+   HEATWISE AI ADVISOR LOGIC
+============================================================ */
+function updateApiKeyButtonLabel() {
+  const lbl = document.getElementById('api-key-status-label');
+  const btn = document.getElementById('btn-api-key-toggle');
+  if (!lbl || !btn) return;
+  if (state.heatwise.apiKey) {
+    lbl.textContent = 'Groq API Key (Set)';
+    btn.className = 'heatwise-btn-sm active';
+  } else {
+    lbl.textContent = 'Groq API Key';
+    btn.className = 'heatwise-btn-sm';
+  }
+}
+
+function toggleApiKeyPanel() {
+  const p = document.getElementById('api-key-panel');
+  if (!p) return;
+  const isOpen = p.classList.contains('open');
+  if (!isOpen) {
+    document.getElementById('groq-key-input').value = state.heatwise.apiKey || '';
+    p.classList.add('open');
+  } else {
+    p.classList.remove('open');
+  }
+}
+
+function saveApiKey() {
+  const input = document.getElementById('groq-key-input');
+  const val = input.value.trim();
+  if (val) {
+    state.heatwise.apiKey = val;
+    localStorage.setItem('heatwise_groq_api_key', val);
+    showToast('Groq API Key saved successfully');
+  } else {
+    clearApiKey();
+    return;
+  }
+  updateApiKeyButtonLabel();
+  document.getElementById('api-key-panel').classList.remove('open');
+  generateHeatwiseAdvisory();
+}
+
+function clearApiKey() {
+  state.heatwise.apiKey = '';
+  localStorage.removeItem('heatwise_groq_api_key');
+  document.getElementById('groq-key-input').value = '';
+  updateApiKeyButtonLabel();
+  document.getElementById('api-key-panel').classList.remove('open');
+  showToast('Groq API Key cleared - Grounded NDMA/IMD mode active');
+  generateHeatwiseAdvisory();
+}
+
+function selectRole(roleId) {
+  state.heatwise.role = roleId;
+  document.querySelectorAll('#roles-carousel .role-btn').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('data-role') === roleId);
+  });
+  state.heatwise.completedTasks.clear();
+  generateHeatwiseAdvisory();
+}
+
+function setHeatwiseLanguage(lang) {
+  state.heatwise.language = lang;
+  ['en', 'hi', 'mr'].forEach(l => {
+    const btn = document.getElementById(`lang-btn-${l}`);
+    if (btn) btn.classList.toggle('active', l === lang);
+  });
+  state.heatwise.completedTasks.clear();
+  generateHeatwiseAdvisory();
+}
+
+function onHeatwiseDateChange() {
+  state.heatwise.date = document.getElementById('heatwise-date-select').value;
+  state.heatwise.completedTasks.clear();
+  generateHeatwiseAdvisory();
+}
+
+function populateHeatwiseDateSelect(forecastRows) {
+  const sel = document.getElementById('heatwise-date-select');
+  if (!sel) return;
+  const currVal = sel.value;
+  sel.innerHTML = '<option value="">Auto: Highest Risk Forecast Day</option>';
+  if (!forecastRows || !forecastRows.length) return;
+
+  forecastRows.forEach(r => {
+    const dt = new Date(r.date).toLocaleDateString('en-IN', {day:'2-digit', month:'short'});
+    const tmax = r.forecast_tmax != null ? parseFloat(r.forecast_tmax).toFixed(1) : '--';
+    const opt = document.createElement('option');
+    opt.value = r.date;
+    opt.textContent = `${dt} - ${tmax}°C (${RISK_LABELS[r.risk_level]||r.risk_level})`;
+    sel.appendChild(opt);
+  });
+  if (currVal) sel.value = currVal;
+}
+
+async function generateHeatwiseAdvisory() {
+  const output = document.getElementById('advisory-card-output');
+  const btn = document.getElementById('btn-generate-ai');
+  const btnLbl = document.getElementById('btn-generate-label');
+
+  if (btn) {
+    btn.disabled = true;
+    btnLbl.textContent = 'Generating...';
+  }
+
+  output.innerHTML = `
+    <div style="text-align:center;padding:42px 20px;color:var(--text-muted)">
+      <div class="loading-spinner" style="margin:0 auto 14px;width:34px;height:34px"></div>
+      <div style="font-size:0.9rem;font-weight:600;color:#93c5fd">Generating Grounded HeatWise Advisory...</div>
+      <div style="font-size:0.77rem;color:var(--text-muted);margin-top:4px">Targeting ${state.city} &bull; Role: ${state.heatwise.role} &bull; Lang: ${state.heatwise.language.toUpperCase()}</div>
+    </div>
+  `;
+
+  try {
+    const payload = {
+      city: state.city,
+      role: state.heatwise.role,
+      language: state.heatwise.language,
+      date: state.heatwise.date || null,
+      scenario_uplift: state.uplift || 0,
+      groq_api_key: state.heatwise.apiKey || undefined
+    };
+
+    const resp = await fetch(API + '/api/heatwise/advisory', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(state.heatwise.apiKey ? { 'x-groq-api-key': state.heatwise.apiKey } : {})
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!resp.ok) {
+      throw new Error(`API returned status ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    state.heatwise.currentAdvisory = data;
+    renderHeatwiseAdvisory(data);
+  } catch(err) {
+    console.error('HeatWise advisory error:', err);
+    output.innerHTML = `
+      <div style="padding:24px;text-align:center;color:#ef4444">
+        <div style="font-weight:700;font-size:0.95rem;margin-bottom:6px">Failed to load HeatWise advisory</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary)">${err.message || 'Please check backend service'}</div>
+        <button class="heatwise-btn-sm" style="margin:14px auto 0;color:#fff;background:var(--accent-blue)" onclick="generateHeatwiseAdvisory()">Retry</button>
+      </div>
+    `;
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btnLbl.textContent = 'Generate Advisory';
+    }
+  }
+}
+
+function renderHeatwiseAdvisory(data) {
+  const output = document.getElementById('advisory-card-output');
+  if (!output || !data || !data.advisory) return;
+
+  const adv = data.advisory;
+  const rc = RISK_COLORS[data.risk_level] || '#f97316';
+  const rl = RISK_LABELS[data.risk_level] || data.risk_level;
+
+  const tmaxStr = data.forecast_tmax != null ? parseFloat(data.forecast_tmax).toFixed(2) + '°C' : '--';
+  const depStr = data.departure != null ? (data.departure >= 0 ? '+' : '') + parseFloat(data.departure).toFixed(2) + '°C' : '--';
+  const scoreStr = data.risk_score != null ? parseFloat(data.risk_score).toFixed(0) + '/100' : '--';
+  const dtFormatted = new Date(data.date).toLocaleDateString(
+    data.language === 'hi' ? 'hi-IN' : (data.language === 'mr' ? 'mr-IN' : 'en-IN'),
+    { day: '2-digit', month: 'long', year: 'numeric' }
+  );
+
+  const isGenerative = Boolean(data.is_generative);
+  const modelBadgeClass = isGenerative ? 'badge badge-green' : 'badge badge-blue';
+  const modelBadgeText = data.model_used || 'Grounded NDMA Engine';
+
+  // Precautions HTML
+  const precautions = adv.precautions || [];
+  const precautionsHtml = precautions.map(p => `
+    <li class="precaution-item">
+      <span class="precaution-bullet"></span>
+      <span>${escapeHtml(p)}</span>
+    </li>
+  `).join('');
+
+  // Actionable Checklist HTML
+  const checklist = adv.actionable_checklist || [];
+  const totalItems = checklist.length;
+  let completedCount = 0;
+
+  const checklistHtml = checklist.map((item, idx) => {
+    const isDone = state.heatwise.completedTasks.has(idx);
+    if (isDone) completedCount++;
+    const prioClass = ((item.priority||'').toLowerCase() === 'high' || (item.priority||'').toLowerCase() === 'critical') ? 'prio-tag-high' : 'prio-tag-med';
+    return `
+      <div class="checklist-row${isDone ? ' completed' : ''}" id="chk-row-${idx}" onclick="toggleChecklistItem(${idx})">
+        <input type="checkbox" class="chk-input" ${isDone ? 'checked' : ''} onclick="event.stopPropagation(); toggleChecklistItem(${idx})" />
+        <div class="checklist-content">
+          <div class="checklist-text">${escapeHtml(item.task)}</div>
+          <div class="checklist-tags">
+            ${item.timeframe ? `<span class="time-tag">${escapeHtml(item.timeframe)}</span>` : ''}
+            ${item.priority ? `<span class="${prioClass}">${escapeHtml(item.priority)}</span>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const progressPct = totalItems ? Math.round((completedCount / totalItems) * 100) : 0;
+
+  // Official Citations
+  const citations = adv.official_citations || [
+    'NDMA National Guidelines for Preparation of Action Plan - Prevention and Management of Heat Wave',
+    'India Meteorological Department (IMD) Operational Heat Action Plan'
+  ];
+  const citationsHtml = citations.map(c => `<span>&bull; ${escapeHtml(c)}</span>`).join(' ');
+
+  output.innerHTML = `
+    <!-- Top Meta Strip -->
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding-bottom:14px;border-bottom:1px solid rgba(99,139,195,0.18)">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#f8fafc">${escapeHtml(data.role_label)}</span>
+        <span class="badge" style="background:${rc}22;color:${rc};border-color:${rc}55">${rl}</span>
+        <span style="font-size:0.77rem;color:var(--text-secondary)">${escapeHtml(data.city)} &bull; ${dtFormatted}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span class="${modelBadgeClass}" style="font-size:0.69rem">${escapeHtml(modelBadgeText)}</span>
+      </div>
+    </div>
+
+    <!-- Verified Grounded Data Banner -->
+    <div class="advisory-meta-pills">
+      <span style="font-size:0.73rem;color:var(--text-muted);font-weight:600">Grounded Verified Forecast:</span>
+      <span class="hero-pill" style="font-size:0.72rem;background:rgba(249,115,22,0.12);color:#fdba74;border-color:rgba(249,115,22,0.25)">Tmax: ${tmaxStr}</span>
+      <span class="hero-pill" style="font-size:0.72rem;background:rgba(59,130,246,0.12);color:#93c5fd;border-color:rgba(59,130,246,0.25)">Departure: ${depStr}</span>
+      <span class="hero-pill" style="font-size:0.72rem;background:rgba(234,179,8,0.12);color:#fef08a;border-color:rgba(234,179,8,0.25)">Risk Score: ${scoreStr}</span>
+      <span class="hero-pill" style="font-size:0.72rem;background:rgba(148,163,184,0.12);color:#cbd5e1;border-color:rgba(148,163,184,0.25)">Region: ${escapeHtml(data.region_type || 'plains')}</span>
+    </div>
+
+    <!-- Executive Alert Box -->
+    <div class="advisory-banner" style="border-left-color:${rc}">
+      <div class="advisory-alert-headline">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${rc}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>${escapeHtml(adv.priority_alert || 'Heatwave Safety Alert')}</span>
+      </div>
+      <div class="advisory-summary-text">${escapeHtml(adv.summary || '')}</div>
+    </div>
+
+    <!-- 2-Col Grid: Precautions & Checklist -->
+    <div class="advisory-grid">
+      <!-- Left: Precautions & Emergency -->
+      <div class="precautions-box">
+        <div class="box-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Role-Specific Precautions</span>
+        </div>
+        <ul class="precaution-list">
+          ${precautionsHtml}
+        </ul>
+
+        ${adv.emergency_protocol ? `
+          <div class="emergency-box">
+            <div class="emergency-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span>Emergency Heat-Illness Protocol</span>
+            </div>
+            <div>${escapeHtml(adv.emergency_protocol)}</div>
+          </div>
+        ` : ''}
+      </div>
+
+      <!-- Right: Actionable Checklist -->
+      <div class="checklist-box">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="box-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <span>Actionable Checklist</span>
+          </div>
+          <button class="heatwise-btn-sm" style="font-size:0.71rem;padding:4px 9px" onclick="copyChecklistToClipboard()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span>Copy Checklist</span>
+          </button>
+        </div>
+
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.73rem;color:var(--text-muted);margin-bottom:3px">
+            <span>Preparedness Progress:</span>
+            <span id="chk-progress-label">${completedCount} of ${totalItems} completed (${progressPct}%)</span>
+          </div>
+          <div class="checklist-progress-bar-wrap">
+            <div class="checklist-progress-bar" id="chk-progress-bar" style="width:${progressPct}%"></div>
+          </div>
+        </div>
+
+        <div class="checklist-items" id="checklist-items-container">
+          ${checklistHtml}
+        </div>
+      </div>
+    </div>
+
+    <!-- Official Standards Citation Footer -->
+    <div class="citations-row">
+      <span style="font-weight:700;color:var(--text-secondary)">Official Framework Alignment:</span>
+      ${citationsHtml}
+    </div>
+  `;
+}
+
+function toggleChecklistItem(index) {
+  if (state.heatwise.completedTasks.has(index)) {
+    state.heatwise.completedTasks.delete(index);
+  } else {
+    state.heatwise.completedTasks.add(index);
+  }
+
+  const row = document.getElementById(`chk-row-${index}`);
+  if (row) {
+    const isNowDone = state.heatwise.completedTasks.has(index);
+    row.classList.toggle('completed', isNowDone);
+    const input = row.querySelector('.chk-input');
+    if (input) input.checked = isNowDone;
+  }
+
+  const total = state.heatwise.currentAdvisory?.advisory?.actionable_checklist?.length || 0;
+  const count = state.heatwise.completedTasks.size;
+  const pct = total ? Math.round((count / total) * 100) : 0;
+  const bar = document.getElementById('chk-progress-bar');
+  const lbl = document.getElementById('chk-progress-label');
+  if (bar) bar.style.width = `${pct}%`;
+  if (lbl) lbl.textContent = `${count} of ${total} completed (${pct}%)`;
+}
+
+function copyChecklistToClipboard() {
+  const adv = state.heatwise.currentAdvisory?.advisory;
+  if (!adv || !adv.actionable_checklist) return;
+
+  const lines = [
+    `HEATWISE AI — ACTIONABLE CHECKLIST`,
+    `Role: ${state.heatwise.currentAdvisory.role_label} | City: ${state.heatwise.currentAdvisory.city} | Date: ${state.heatwise.currentAdvisory.date}`,
+    `Risk: ${state.heatwise.currentAdvisory.risk_level} (Tmax: ${state.heatwise.currentAdvisory.forecast_tmax}°C)`,
+    `Alert: ${adv.priority_alert}`,
+    `----------------------------------------`
+  ];
+
+  adv.actionable_checklist.forEach((item, idx) => {
+    const mark = state.heatwise.completedTasks.has(idx) ? '[X]' : '[ ]';
+    const tf = item.timeframe ? ` (${item.timeframe})` : '';
+    const pr = item.priority ? ` [${item.priority}]` : '';
+    lines.push(`${mark} ${item.task}${tf}${pr}`);
+  });
+
+  lines.push(`----------------------------------------`);
+  lines.push(`Generated by HeatWise AI • Grounded in NDMA / IMD Guidelines`);
+
+  navigator.clipboard.writeText(lines.join('\n')).then(() => {
+    showToast('Checklist copied to clipboard!');
+  });
+}
+
+function showToast(msg) {
+  let toast = document.getElementById('toast-msg');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast-msg';
+    toast.className = 'toast-msg';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => { toast.classList.remove('show'); }, 2500);
+}
+
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 init();
 </script>
+<div class="toast-msg" id="toast-msg"></div>
 </body>
 </html>

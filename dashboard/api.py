@@ -12,11 +12,14 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
+import os
+from typing import Optional
 import numpy as np
 import pandas as pd
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
+from pydantic import BaseModel, Field
 import io
 
 from config import ALERT_COLORS, ALERT_LABELS, CITIES
@@ -27,6 +30,11 @@ from climate_pipeline import (
     HISTORICAL_RISK_FILE,
     METRICS_FILE,
     classify_risk,
+)
+from heatwise_advisor import (
+    generate_advisory,
+    get_supported_languages,
+    get_supported_roles,
 )
 
 # ---------------------------------------------------------------------------
@@ -413,4 +421,150 @@ def download_forecast(city: str = Query(...)):
         io.BytesIO(csv_bytes),
         media_type="text/csv",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+# ---------------------------------------------------------------------------
+# HeatWise AI — Generative Role-Specific Advisory Endpoints
+# ---------------------------------------------------------------------------
+
+class HeatwiseAdvisoryRequest(BaseModel):
+    city: str = Field(..., description="Monitored city name")
+    role: str = Field("outdoor_workers", description="Target group: outdoor_workers, school_admins, older_adults, event_organisers, municipal_officials")
+    language: str = Field("en", description="Output language: en (English), hi (Hindi), mr (Marathi)")
+    date: Optional[str] = Field(None, description="Forecast date (defaults to highest risk day)")
+    scenario_uplift: float = Field(0.0, description="Hypothetical scenario uplift °C")
+    groq_api_key: Optional[str] = Field(None, description="Optional user-provided Groq API key")
+
+
+def _build_heatwise_advisory(
+    city: str,
+    role: str = "outdoor_workers",
+    language: str = "en",
+    date: Optional[str] = None,
+    scenario_uplift: float = 0.0,
+    groq_api_key: Optional[str] = None,
+) -> dict:
+    data = _load()
+    forecast = data["forecast"]
+    if forecast.empty:
+        raise HTTPException(status_code=503, detail="Pipeline data not yet generated.")
+
+    forecast["date"] = pd.to_datetime(forecast["date"])
+    city_forecast = forecast[forecast["city"] == city].sort_values("date").copy()
+    if city_forecast.empty:
+        raise HTTPException(status_code=404, detail=f"No data for city: {city}")
+
+    if scenario_uplift > 0:
+        city_forecast["forecast_tmax_c"] = city_forecast["forecast_tmax_c"].astype(float) + scenario_uplift
+        city_forecast["departure_c"] = city_forecast["forecast_tmax_c"] - city_forecast["normal_tmax_c"]
+        levels, reasons, scores = [], [], []
+        for row in city_forecast.itertuples(index=False):
+            level, reason, score = classify_risk(
+                row.forecast_tmax_c, row.departure_c, row.humidity_mean_pct, row.region_type
+            )
+            levels.append(level)
+            reasons.append(reason)
+            scores.append(score)
+        city_forecast["risk_level"] = levels
+        city_forecast["risk_reason"] = reasons
+        city_forecast["risk_score"] = scores
+
+    target_row = None
+    if date:
+        matched = city_forecast[city_forecast["date"].dt.strftime("%Y-%m-%d") == date]
+        if not matched.empty:
+            target_row = matched.iloc[0]
+
+    if target_row is None:
+        level_rank = {"RED": 4, "ORANGE": 3, "YELLOW": 2, "GREEN": 1}
+        city_forecast["rank"] = city_forecast["risk_level"].map(lambda l: level_rank.get(l, 0))
+        sorted_fc = city_forecast.sort_values(by=["rank", "forecast_tmax_c"], ascending=[False, False])
+        target_row = sorted_fc.iloc[0]
+
+    target_date_str = pd.Timestamp(target_row["date"]).strftime("%Y-%m-%d")
+    tmax = float(target_row["forecast_tmax_c"])
+    tmin = float(target_row.get("forecast_tmin_c", getattr(target_row, "normal_tmax_c", 25.0) - 10.0))
+    dep = float(target_row.get("departure_c", 0.0))
+    risk_lvl = str(target_row.get("risk_level", "ORANGE"))
+    risk_score = float(target_row.get("risk_score", 70.0))
+    region_type = str(target_row.get("region_type", CITIES.get(city, {}).get("region_type", "plains")))
+
+    effective_key = groq_api_key or os.environ.get("GROQ_API_KEY")
+
+    return generate_advisory(
+        city=city,
+        date=target_date_str,
+        role=role,
+        language=language,
+        risk_level=risk_lvl,
+        risk_score=risk_score,
+        forecast_tmax=tmax,
+        forecast_tmin=tmin,
+        departure=dep,
+        region_type=region_type,
+        groq_api_key=effective_key,
+    )
+
+
+@app.get("/api/heatwise/roles")
+def get_heatwise_roles():
+    """Returns supported user groups/roles for HeatWise AI."""
+    return {"roles": get_supported_roles()}
+
+
+@app.get("/api/heatwise/languages")
+def get_heatwise_languages():
+    """Returns supported languages for HeatWise AI."""
+    return {"languages": get_supported_languages()}
+
+
+@app.get("/api/heatwise/status")
+def get_heatwise_status():
+    """Returns HeatWise AI configuration and Groq availability."""
+    has_key = bool(os.environ.get("GROQ_API_KEY"))
+    return {
+        "groq_configured": has_key,
+        "default_model": "llama-3.3-70b-versatile",
+        "supported_roles": list(get_supported_roles().keys()),
+        "supported_languages": list(get_supported_languages().keys()),
+    }
+
+
+@app.get("/api/heatwise/advisory")
+def get_heatwise_advisory(
+    city: str = Query(...),
+    role: str = Query("outdoor_workers"),
+    language: str = Query("en"),
+    date: Optional[str] = Query(None),
+    scenario_uplift: float = Query(0.0),
+    groq_api_key: Optional[str] = Query(None),
+    x_groq_api_key: Optional[str] = Header(None),
+):
+    """GET endpoint for HeatWise advisory."""
+    key = groq_api_key or x_groq_api_key
+    return _build_heatwise_advisory(
+        city=city,
+        role=role,
+        language=language,
+        date=date,
+        scenario_uplift=scenario_uplift,
+        groq_api_key=key,
+    )
+
+
+@app.post("/api/heatwise/advisory")
+def post_heatwise_advisory(
+    payload: HeatwiseAdvisoryRequest,
+    x_groq_api_key: Optional[str] = Header(None),
+):
+    """POST endpoint for HeatWise advisory with JSON payload."""
+    key = payload.groq_api_key or x_groq_api_key
+    return _build_heatwise_advisory(
+        city=payload.city,
+        role=payload.role,
+        language=payload.language,
+        date=payload.date,
+        scenario_uplift=payload.scenario_uplift,
+        groq_api_key=key,
     )

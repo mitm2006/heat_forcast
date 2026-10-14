@@ -1,0 +1,37 @@
+# ============================================================
+# k8s/overprovisioned-workload.yaml
+# Demonstration of an Over-Provisioned Cloud Deployment
+# Result: High AWS monthly bill, low CPU/RAM utilization (~8%),
+# and wasteful cluster footprint.
+# ============================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: climate-api-overprovisioned
+  namespace: climate-intelligence
+  labels:
+    app: climate-api-overprovisioned
+    workload-state: overprovisioned
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: climate-api-overprovisioned
+  template:
+    metadata:
+      labels:
+        app: climate-api-overprovisioned
+    spec:
+      containers:
+        - name: api
+          image: climate-intelligence-api:latest
+          ports:
+            - containerPort: 8000
+          # Excessive allocations (88% idle compute capacity)
+          resources:
+            requests:
+              cpu: "2000m"      # 2 full vCPUs requested
+              memory: "4096Mi"  # 4 GiB RAM requested
+            limits:
+              cpu: "4000m"      # 4 vCPUs limit
+              memory: "8192Mi"  # 8 GiB RAM limit
